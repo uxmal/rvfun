@@ -34,6 +34,16 @@ public class EmulatorTests
         Assert.AreEqual(42, emu.Registers[2]);
     }
 
+        [Test]
+    public void RiscVEmu_addi_x0()
+    {
+        RunTest(m =>
+        {
+            m.asm(addi, 0, 0, 42);
+        });
+        Assert.AreEqual(0, emu.Registers[0]);
+    }
+
     [Test]
     public void RiscVEmu_addi_minus2()
     {
@@ -214,6 +224,31 @@ public class EmulatorTests
         Assert.AreEqual(0x12345678, memory.ReadLeWord32(0x128));
     }
 
+    [Test]
+    public void RiscVEmu_jal_x0()
+    {
+        RunTest(m => 
+        {
+            m.asm(addi, 4, 0, 1);
+            m.asm(jal, 0, 8, 0);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(1, emu.Registers[4]);
+    }
+    
+    [Test]
+    public void RiscVEmu_bne()
+    {
+        RunTest(m => 
+        {
+            m.asm(addi, 4, 0, 1);
+            m.asm(bne, 4, 0, 8);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(1, emu.Registers[4]);
+    }
 
         /*
 m.asm(addi, 1, 0, 10);      // 0:
