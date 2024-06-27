@@ -20,6 +20,13 @@ public class Memory
         this.bytes[address] = value;
     }
 
+    public uint ReadLeWord16(uint address)
+    {
+        var b0 = this.bytes[address];
+        var b1 = this.bytes[address + 1];
+        return b0 + 
+            (uint)(b1 * 256);
+    }
 
     public uint ReadLeWord32(uint address)
     {
@@ -32,6 +39,17 @@ public class Memory
             (uint)(b2 * 65536) +
             (uint)(b3 * 256 * 65536);
     }
+
+    public void WriteLeWord16(uint address, ushort value) => WriteLeWord16(address, (short)value);
+
+    public void WriteLeWord16(uint address, short value)
+    {
+        var b1 = (byte)(value >> 8);
+        var b0 = (byte) value;
+        this.bytes[address] = b0;
+        this.bytes[address+ 1] = b1;
+    }
+
 
     public void WriteLeWord32(uint address, uint value) => WriteLeWord32(address, (int)value);
 

@@ -17,6 +17,9 @@ public class Emulator
     private static BitField bfSrc2 = new BitField(20, 5);
 
     private static BitField bfImm20 = new BitField(20, 12);
+    private static BitField bf25L7 = new BitField(25, 7);
+    private static BitField bf7L5 = new BitField(7, 5);
+    private static BitField[] bitFieldsSimm = new BitField[] { bf25L7, bf7L5 };
 
     public Emulator(Memory mem)
     {
@@ -48,8 +51,38 @@ public class Emulator
         uint src2;
         uint dst;
         int imm;
+        uint ea;
         switch (opcode)
         {
+            case 0b0000011:
+                funct3 = bfFunct3.ExtractUnsigned(uInstr);
+                src1 = bfSrc1.ExtractUnsigned(uInstr);
+                imm = bfImm20.ExtractSigned(uInstr);
+                dst = bfDst.ExtractUnsigned(uInstr);
+                ea = (uint)(this.Registers[src1] + imm);
+                switch (funct3)
+                {
+                    case 0b000: // lb
+                    this.Registers[dst] = (sbyte) mem.ReadByte(ea);
+                    break;
+                    case 0b001: // lh
+                    this.Registers[dst] = (short) mem.ReadLeWord16(ea);
+                    break;
+                    case 0b010: // lw
+                    this.Registers[dst] = (int)mem.ReadLeWord32(ea);
+                    break;
+                    case 0b100: // lbu
+                    this.Registers[dst] = mem.ReadByte(ea);
+                    break;
+                    case 0b101: // lhu
+                    this.Registers[dst] = (ushort) mem.ReadLeWord16(ea);
+                    break;
+
+                    default:
+                        throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
+                }
+                break;
+
             case 0b0110011:
                 funct3 = bfFunct3.ExtractUnsigned(uInstr);
                 src1 = bfSrc1.ExtractUnsigned(uInstr);
@@ -93,6 +126,28 @@ public class Emulator
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
+                break;
+            case 0b0100011:
+                funct3 = bfFunct3.ExtractUnsigned(uInstr);
+                src1 = bfSrc1.ExtractUnsigned(uInstr);
+                imm = BitField.ExtractSigned(uInstr, bitFieldsSimm);
+                dst = bfDst.ExtractUnsigned(uInstr);
+                ea = (uint)(this.Registers[src1] + imm);
+                switch (funct3)
+                {
+                    case 0b000: // sb
+                    this.mem.WriteByte(ea, (byte)Registers[dst]);
+                    break;
+                    case 0b001: // sh
+                    this.mem.WriteLeWord16(ea, (ushort)Registers[dst]);
+                    break;
+                    case 0b010: // sw
+                    this.mem.WriteLeWord32(ea, (uint)Registers[dst]);
+                    break;
+                    default:
+                        throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
+                }
+
                 break;
 
             default:
