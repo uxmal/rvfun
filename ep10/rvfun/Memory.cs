@@ -1,5 +1,3 @@
-
-
 namespace rvfun;
 
 public class Memory

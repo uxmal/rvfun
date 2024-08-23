@@ -30,12 +30,50 @@ public class Assembler
                 asmR(0b0110011, 0, 0, dst, src1, src2); break;
             case Mnemonics.addi:
                 asmI(0b0010011, 0b000, dst, src1, src2); break;
+            case Mnemonics.addiw:
+                asmI(0b0011011, 0b000, dst, src1, src2); break;
+            case Mnemonics.addw:
+                asmR(0b0111011, 0, 0, dst, src1, src2); break;
+            case Mnemonics.and:
+                asmR(0b0110011, 0b111, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.andi:
+                asmI(0b0010011, 0b111, dst, src1, src2); break;
             case Mnemonics.auipc:
                 asmU(0b0010111, dst, src1); break;
+            case Mnemonics.beq:
+                asmB(0b1100011, 0b000, dst, src1, src2); break;
             case Mnemonics.bge:
                 asmB(0b1100011, 0b101, dst, src1, src2); break;
+            case Mnemonics.bgeu:
+                asmB(0b1100011, 0b111, dst, src1, src2); break;
+            case Mnemonics.blt:
+                asmB(0b1100011, 0b100, dst, src1, src2); break;
+            case Mnemonics.bltu:
+                asmB(0b1100011, 0b110, dst, src1, src2); break;
             case Mnemonics.bne:
                 asmB(0b1100011, 0b001, dst, src1, src2); break;
+            case Mnemonics.csrrc:
+                asmI(0b1110011, 0b011, dst, src1, src2); break;
+            case Mnemonics.csrrci:
+                asmI(0b1110011, 0b111, dst, src1, src2); break;
+            case Mnemonics.csrrs:
+                asmI(0b1110011, 0b010, dst, src1, src2); break;
+            case Mnemonics.csrrsi:
+                asmI(0b1110011, 0b110, dst, src1, src2); break;
+            case Mnemonics.csrrw:
+                asmI(0b1110011, 0b001, dst, src1, src2); break;
+            case Mnemonics.csrrwi:
+                asmI(0b1110011, 0b101, dst, src1, src2); break;
+            case Mnemonics.div:
+                asmR(0b0110011, 0b100, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.divu:
+                asmR(0b0110011, 0b101, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.divuw:
+                asmR(0b0111011, 0b101, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.divw:
+                asmR(0b0111011, 0b100, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.ebreak:
+                asmI(0b1110011, 0b000, 0, 0, 1); break;
             case Mnemonics.ecall:
                 asmI(0b1110011, 0b000, 0, 0, 0); break;
             case Mnemonics.jal:
@@ -44,6 +82,8 @@ public class Assembler
                 asmI(0b1100111, 0b000, dst, src1, src2); break;
             case Mnemonics.lb:
                 asmI(0b0000011, 0b000, dst, src1, src2); break;
+            case Mnemonics.ld:
+                asmI(0b0000011, 0b011, dst, src1, src2); break;
             case Mnemonics.lbu:
                 asmI(0b0000011, 0b100, dst, src1, src2); break;
             case Mnemonics.lh:
@@ -54,16 +94,78 @@ public class Assembler
                 asmU(0b0110111, dst, src1); break;
             case Mnemonics.lw:
                 asmI(0b0000011, 0b010, dst, src1, src2); break;
+            case Mnemonics.lwu:
+                asmI(0b0000011, 0b110, dst, src1, src2); break;
             case Mnemonics.mul:
                 asmR(0b0110011, 0b000, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.mulh:
+                asmR(0b0110011, 0b001, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.mulhsu:
+                asmR(0b0110011, 0b010, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.mulhu:
+                asmR(0b0110011, 0b011, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.mulw:
+                asmR(0b0111011, 0b000, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.rem:
+                asmR(0b0110011, 0b110, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.remu:
+                asmR(0b0110011, 0b111, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.remuw:
+                asmR(0b0111011, 0b111, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.remw:
+                asmR(0b0111011, 0b110, 0b0000001, dst, src1, src2); break;
+            case Mnemonics.or:
+                asmR(0b0110011, 0b110, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.ori:
+                asmI(0b0010011, 0b110, dst, src1, src2); break;
             case Mnemonics.sb:
                 asmS(0b0100011, 0b000, dst, src1, src2); break;
+            case Mnemonics.sd:
+                asmS(0b0100011, 0b011, dst, src1, src2); break;
             case Mnemonics.sh:
                 asmS(0b0100011, 0b001, dst, src1, src2); break;
+            case Mnemonics.slt:
+                asmR(0b0110011, 0b010, 0b0000000, dst, src1, src2); break;
             case Mnemonics.slti:
                 asmI(0b0010011, 0b010, dst, src1, src2); break;
+            case Mnemonics.sltiu:
+                asmI(0b0010011, 0b011, dst, src1, src2); break;
+            case Mnemonics.sltu:
+                asmR(0b0110011, 0b011, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.sll:
+                asmR(0b0110011, 0b001, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.slli:
+                asmR(0b0010011, 0b001, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.slliw:
+                asmR(0b0011011, 0b001, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.sllw:
+                asmR(0b0111011, 0b001, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.sra:
+                asmR(0b0110011, 0b101, 0b0100000, dst, src1, src2); break;
+            case Mnemonics.srai:
+                asmR(0b0010011, 0b101, 0b0100000, dst, src1, src2); break;
+            case Mnemonics.sraiw:
+                asmR(0b00011011, 0b101, 0b0100000, dst, src1, src2); break;
+            case Mnemonics.sraw:
+                asmR(0b00111011, 0b101, 0b0100000, dst, src1, src2); break;
+            case Mnemonics.srli:
+                asmR(0b0010011, 0b101, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.srliw:
+                asmR(0b0011011, 0b101, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.srl:
+                asmR(0b0110011, 0b101, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.srlw:
+                asmR(0b0111011, 0b101, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.sub:
+                asmR(0b0110011, 0b000, 0b0100000, dst, src1, src2); break;
+            case Mnemonics.subw:
+                asmR(0b0111011, 0b000, 0b0100000, dst, src1, src2); break;
             case Mnemonics.sw:
                 asmS(0b0100011, 0b010, dst, src1, src2); break;
+            case Mnemonics.xor:
+                asmR(0b0110011, 0b100, 0b0000000, dst, src1, src2); break;
+            case Mnemonics.xori:
+                asmI(0b0010011, 0b100, dst, src1, src2); break;
 
             case Mnemonics.Invalid:
                 memory.WriteLeWord32(instrPtr, 0);
