@@ -29,6 +29,7 @@ public class Emulator
 
     private static BitField bf31L1 = new BitField(31, 1);
     private static BitField bf12L8 = new BitField(12, 8);
+    private static BitField bf12L20 = new BitField(12, 20);
     private static BitField bf20L1 = new BitField(20, 1);
     private static BitField bf21L10 = new BitField(21, 10);
     private static BitField[] bitFieldsJimm = new BitField[] { bf31L1, bf12L8, bf20L1, bf21L10 };
@@ -90,6 +91,7 @@ public class Emulator
         uint src2;
         uint dst;
         int imm;
+        uint uimm;
         uint ea;
         switch (opcode)
         {
@@ -166,6 +168,12 @@ public class Emulator
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
                 break;
+            case 0b0010111: // auipc
+                dst = bfDst.ExtractUnsigned(uInstr);
+                uimm = bf12L20.ExtractUnsigned(uInstr);
+                WriteRegister(dst, (int)(iptr + (uimm << 12)));
+                break;
+
             case 0b0100011:
                 funct3 = bfFunct3.ExtractUnsigned(uInstr);
                 src1 = bfSrc1.ExtractUnsigned(uInstr);
@@ -209,6 +217,11 @@ public class Emulator
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
+                break;
+            case 0b0110111: // lui
+                dst = bfDst.ExtractUnsigned(uInstr);
+                uimm = bf12L20.ExtractUnsigned(uInstr);
+                WriteRegister(dst, (int)uimm << 12);
                 break;
             case 0b1100111: // jalr
                 funct3 = bfFunct3.ExtractUnsigned(uInstr);

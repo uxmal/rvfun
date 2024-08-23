@@ -297,4 +297,26 @@ public class EmulatorTests
         Assert.AreEqual(1, exitCode!.Value);
     }
 
+    [Test]
+    public void RiscVEmu_lui()
+    {
+        RunTest(m => 
+        {
+            m.asm(lui, 1, 0x12345, 0);
+            m.asm(addi, 1, 1, 0x678);
+        });
+        Assert.AreEqual(0x12345678, emu.Registers[1]);
+    }
+
+    [Test]
+    public void RiscVEmu_auipc()
+    {
+        RunTest(m => 
+        {
+            m.asm(auipc, 1, 0x12345, 0);
+            m.asm(addi, 1, 1, 0x678);
+        });
+        Assert.AreEqual(0x12345678, emu.Registers[1]);
+    }
+
 }

@@ -25,4 +25,6 @@ public enum Mnemonics
     bne,
     slti,
     jalr,
+    lui,
+    auipc,
 }

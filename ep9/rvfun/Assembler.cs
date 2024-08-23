@@ -30,6 +30,8 @@ public class Assembler
                 asmR(0b0110011, 0, 0, dst, src1, src2); break;
             case Mnemonics.addi:
                 asmI(0b0010011, 0b000, dst, src1, src2); break;
+            case Mnemonics.auipc:
+                asmU(0b0010111, dst, src1); break;
             case Mnemonics.bge:
                 asmB(0b1100011, 0b101, dst, src1, src2); break;
             case Mnemonics.bne:
@@ -48,6 +50,8 @@ public class Assembler
                 asmI(0b0000011, 0b001, dst, src1, src2); break;
             case Mnemonics.lhu:
                 asmI(0b0000011, 0b101, dst, src1, src2); break;
+            case Mnemonics.lui:
+                asmU(0b0110111, dst, src1); break;
             case Mnemonics.lw:
                 asmI(0b0000011, 0b010, dst, src1, src2); break;
             case Mnemonics.mul:
@@ -140,6 +144,17 @@ public class Assembler
         uInstr |= (uint) (dst & 0b11111) << 7;
         uInstr |= (uint) (src1 & 0b11111) << 15;
         uInstr |= (uint) (src2 & 0b11111) << 20;
+        memory.WriteLeWord32(instrPtr, uInstr);
+        instrPtr += 4;
+    }
+
+        // Assembles a Risc-V I-type instruction.
+
+    private void asmU(uint opcode, int dst, int src1)
+    {
+        uint uInstr = opcode;
+        uInstr |= (uint) (dst & 0b11111) << 7;
+        uInstr |= (uint) src1 << 12;
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }

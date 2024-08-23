@@ -141,4 +141,22 @@ public class AssemblerTests
             0b000000000000_00000_000_00000_1110011u,
             m => m.asm(Mnemonics.ecall, 0, 0, 0));
     }
+
+    [Test]
+    public void RiscvAsm_lui()
+    {
+        RunTest(
+            // imm[31:12] rd 0110111 LUI
+            0b00010010001101000101_00001_0110111u,
+            m => m.asm(Mnemonics.lui, 1, 0x12345, 0));
+    }
+
+    [Test]
+    public void RiscvAsm_auipc()
+    {
+        RunTest(
+            // imm[31:12] rd 0010111 AUIPC
+            0b00010010001101000101_00001_0010111u,
+            m => m.asm(Mnemonics.auipc, 1, 0x12345, 0));
+    }
 }
