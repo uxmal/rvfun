@@ -144,6 +144,83 @@ public class Emulator
                             case 1:
                                 value = src1Value * src2Value;
                                 break;
+                            case 0b0100000:
+                                value = src1Value - src2Value;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+                    case 1:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // sll
+                                value = src1Value << src2Value;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+                    case 0b010:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // slt
+                                value = src1Value < src2Value ? 1 : 0;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+                    case 0b011:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // sltu
+                                value = (uint)src1Value < (uint)src2Value ? 1 : 0;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+                    case 0b100:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // xor
+                                value = src1Value ^ src2Value;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+                    case 0b101:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // srl
+                                value = src1Value >>> src2Value;
+                                break;
+                            case 0b0100000: // sra
+                                value = src1Value >> src2Value;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+
+                    case 0b110:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // or
+                                value = src1Value | src2Value;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;                        
+                    case 0b111:
+                        switch (funct7)
+                        {
+                            case 0b0000000 : // and
+                                value = src1Value & src2Value;
+                                break;
                             default:
                                 throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
                         }
@@ -165,9 +242,52 @@ public class Emulator
                     case 0b000: // addi
                         value = src1Value + imm;
                         break;
+                    case 0b001:
+                        funct7 = bfFunct7.ExtractUnsigned(uInstr);
+                        src2 = bfSrc2.ExtractUnsigned(uInstr);
+                        var shamt = (int)src2;
+                        switch (funct7)
+                        {
+                            case 0b0000000: // slli
+                                value = src1Value << shamt;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
                     case 0b010: // slti
                         value = src1Value < imm ? 1 : 0;
                         break;
+                    case 0b011: // sltiu
+                        value = (uint)src1Value < (uint) imm ? 1 : 0;
+                        break;
+                    case 0b100: // xori
+                        value = src1Value ^ imm;
+                        break;
+                    case 0b101:
+                        funct7 = bfFunct7.ExtractUnsigned(uInstr);
+                        src2 = bfSrc2.ExtractUnsigned(uInstr);
+                        shamt = (int)src2;
+                        switch (funct7)
+                        {
+                            case 0b0000000: // srli
+                                value = src1Value >>> shamt;
+                                break;
+                            case 0b0100000: // srai
+                                value = src1Value >> shamt;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
+                        }
+                        break;
+
+                    case 0b110: // ori
+                        value = src1Value | imm;
+                        break;
+                    case 0b111: // andi
+                        value = src1Value & imm;
+                        break;
+
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
@@ -211,11 +331,23 @@ public class Emulator
                 src2Value = Registers[src2];
                 switch (funct3)
                 {
+                    case 0b000:     // beq
+                        predicate = src1Value == src2Value;
+                        break;
                     case 0b001:     // bne
                         predicate = src1Value != src2Value;
                         break;
+                    case 0b100:     // blt
+                        predicate = src1Value < src2Value;
+                        break;
                     case 0b101:     // bge
                         predicate = src1Value >= src2Value;
+                        break;
+                    case 0b110:     // bltu
+                        predicate = (uint)src1Value < (uint)src2Value;
+                        break;
+                    case 0b111:     // bgeu
+                        predicate = (uint)src1Value >= (uint) src2Value;
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");

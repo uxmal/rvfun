@@ -113,6 +113,33 @@ public class EmulatorTests
     }
 
     [Test]
+    public void RiscVEmu_sltiu_true()
+    {
+        RunTest(m =>
+        {
+            emu.Registers[4] = -4;
+            emu.Registers[5] = 5;
+
+            m.asm(sltiu, 4, 5, -2);
+        });
+        Assert.AreEqual(1, emu.Registers[4]);
+    }
+
+    [Test]
+    public void RiscVEmu_sltiu_false()
+    {
+        RunTest(m =>
+        {
+            emu.Registers[4] = -2;
+            emu.Registers[5] = 5;
+
+            m.asm(slti, 4, 5, 5);
+        });
+        Assert.AreEqual(0, emu.Registers[4]);
+    }
+
+
+    [Test]
     public void RiscVEmu_lb()
     {
         RunTest(m =>
@@ -336,20 +363,17 @@ public class EmulatorTests
         Assert.Fail("Not implemented");
     }
 
-
-
-
-
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_beq()
     {
         RunTest(m =>
-                {
-
-                    m.asm(beq, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
+        {
+            m.asm(addi, 4, 0, 0);
+            m.asm(beq, 4, 0, 8);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(0, emu.Registers[4]);
     }
 
 
@@ -357,15 +381,16 @@ public class EmulatorTests
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_blt()
     {
         RunTest(m =>
-                {
-
-                    m.asm(blt, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
+        {
+            m.asm(addi, 4, 0, -2);
+            m.asm(blt, 4, 0, 8);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(-2, emu.Registers[4]); 
     }
 
 
@@ -373,250 +398,226 @@ public class EmulatorTests
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_bltu()
     {
         RunTest(m =>
-                {
-
-                    m.asm(bltu, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
+        {
+            m.asm(addi, 3, 0, -2);
+            m.asm(addi, 4, 0, 1);
+            m.asm(bltu, 4, 3, 8);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(1, emu.Registers[4]); 
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_bgeu()
     {
         RunTest(m =>
-                {
-
-                    m.asm(bgeu, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
+        {
+            m.asm(addi, 3, 0, -2);
+            m.asm(addi, 4, 0, 1);
+            m.asm(bgeu, 3, 4, 8);
+            m.asm(addi, 4, 0, -1);
+            m.asm(addi, 0, 0, 0);
+        });
+        Assert.AreEqual(1, emu.Registers[4]); 
     }
 
 
-    [Test]
-    [Ignore("nyi")]
-    public void RiscVEmu_slti()
-    {
-        RunTest(m =>
-                {
-
-                    m.asm(slti, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
-    }
-
 
     [Test]
-    [Ignore("nyi")]
-    public void RiscVEmu_sltiu()
-    {
-        RunTest(m =>
-                {
-
-                    m.asm(sltiu, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
-    }
-
-
-    [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_xori()
     {
         RunTest(m =>
                 {
-
-                    m.asm(xori, -1, -1, -1);
+                    emu.Registers[4] = 0x55555555; 
+                    m.asm(xori, 5, 4, -1);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(unchecked((int)0xAAAAAAAA), emu.Registers[5]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_ori()
     {
         RunTest(m =>
                 {
-
-                    m.asm(ori, -1, -1, -1);
+                    emu.Registers[4] = 0x55555555; 
+                    m.asm(ori, 5, 4, -1);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(unchecked((int)0xFFFFFFFF), emu.Registers[5]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_andi()
     {
         RunTest(m =>
                 {
-
-                    m.asm(andi, -1, -1, -1);
+                    emu.Registers[4] = 0x55555555; 
+                    m.asm(andi, 5, 4, 0xF);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(5, emu.Registers[5]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_slli()
     {
         RunTest(m =>
                 {
-
-                    m.asm(slli, -1, -1, -1);
+                    m.asm(addi, 4, 0, 2);           // 0000010
+                    m.asm(slli, 5, 4, 1);
                 });
-        Assert.Fail("Not implemented");
+        Assert.AreEqual(4, emu.Registers[5]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_srli()
     {
         RunTest(m =>
                 {
-
-                    m.asm(srli, -1, -1, -1);
+                    m.asm(addi, 4, 0, 4);           // 0000100
+                    m.asm(srli, 5, 4, 1);
                 });
-        Assert.Fail("Not implemented");
+        Assert.AreEqual(2, emu.Registers[5]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_srai()
     {
         RunTest(m =>
                 {
+                    m.asm(addi, 4, 0, -1);
 
-                    m.asm(srai, -1, -1, -1);
+                    m.asm(srai, 5, 4, 4);
                 });
-        Assert.Fail("Not implemented");
+        Assert.AreEqual(-1, emu.Registers[5]);
     }
 
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_sub()
     {
         RunTest(m =>
                 {
-
-                    m.asm(sub, -1, -1, -1);
+                    m.asm(addi, 4, 0, 2);
+                    m.asm(addi, 5, 0, 3);
+                    m.asm(sub, 3, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+        Assert.AreEqual(-1, emu.Registers[3]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_sll()
     {
         RunTest(m =>
                 {
-
-                    m.asm(sll, -1, -1, -1);
+                    m.asm(addi, 4, 0, 2);
+                    m.asm(addi, 3, 0, 3);
+                    m.asm(sll, 5, 4, 3);
                 });
-        Assert.Fail("Not implemented");
+        Assert.AreEqual(0x10, emu.Registers[5]);
     }
 
 
-    [Test]
-    [Ignore("nyi")]
-    public void RiscVEmu_slt()
+    [TestCase(2, 3, 1)]
+    [TestCase(3, 3, 0)]
+        public void RiscVEmu_slt(int reg1, int reg2, int result)
     {
         RunTest(m =>
                 {
-
-                    m.asm(slt, -1, -1, -1);
+                    m.asm(addi, 4, 0, reg1);
+                    m.asm(addi, 5, 0, reg2);
+                    m.asm(slt, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(result, emu.Registers[6]);
     }
 
 
-    [Test]
-    [Ignore("nyi")]
-    public void RiscVEmu_sltu()
+    [TestCase(2u, 0xFFFFFFF3u, 1)]
+    [TestCase(0xFFFFFFF3u, 2u, 0)]
+    public void RiscVEmu_sltu(uint reg1, uint reg2, int result)
     {
         RunTest(m =>
                 {
-
-                    m.asm(sltu, -1, -1, -1);
+                    m.asm(addi, 4, 0, (int)reg1);
+                    m.asm(addi, 5, 0, (int)reg2);
+                    m.asm(sltu, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(result, emu.Registers[6]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_xor()
     {
         RunTest(m =>
                 {
-
-                    m.asm(xor, -1, -1, -1);
+                    m.asm(addi, 4, 0, 0xAAA);
+                    m.asm(addi, 5, 0, 0xFFF);
+                    m.asm(xor, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(0x555, emu.Registers[6]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_srl()
     {
         RunTest(m =>
                 {
-
-                    m.asm(srl, -1, -1, -1);
+                    m.asm(addi, 4, 0, 6);
+                    m.asm(addi, 5, 0, 1);
+                    m.asm(srl, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(3, emu.Registers[6]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_sra()
     {
         RunTest(m =>
                 {
-
-                    m.asm(sra, -1, -1, -1);
+                    m.asm(addi, 4, 0, -20);
+                    m.asm(addi, 5, 0, 10);
+                    m.asm(sra, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
-    }
+                Assert.AreEqual(-1, emu.Registers[6]);
+        }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_or()
     {
         RunTest(m =>
                 {
-
-                    m.asm(or, -1, -1, -1);
+                    m.asm(addi, 4, 0, 0x2AA);
+                    m.asm(addi, 5, 0, 0x0F0);
+                    m.asm(or, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(0x2FA, emu.Registers[6]);
     }
 
 
     [Test]
-    [Ignore("nyi")]
     public void RiscVEmu_and()
     {
         RunTest(m =>
                 {
-
-                    m.asm(and, -1, -1, -1);
+                    m.asm(addi, 4, 0, 0xAAA);
+                    m.asm(addi, 5, 0, 0x0F0);
+                    m.asm(and, 6, 4, 5);
                 });
-        Assert.Fail("Not implemented");
+                Assert.AreEqual(0x0A0, emu.Registers[6]);
     }
 
 
