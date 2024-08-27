@@ -38,7 +38,7 @@ public class EmulatorTests
         Assert.AreEqual(42, emu.Registers[2]);
     }
 
-        [Test]
+    [Test]
     public void RiscVEmu_addi_x0()
     {
         RunTest(m =>
@@ -230,7 +230,7 @@ public class EmulatorTests
     [Test]
     public void RiscVEmu_jal_x0()
     {
-        RunTest(m => 
+        RunTest(m =>
         {
             m.asm(addi, 4, 0, 1);
             m.asm(jal, 0, 8, 0);
@@ -239,11 +239,11 @@ public class EmulatorTests
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
-    
+
     [Test]
     public void RiscVEmu_bne()
     {
-        RunTest(m => 
+        RunTest(m =>
         {
             m.asm(addi, 4, 0, 1);
             m.asm(bne, 4, 0, 8);
@@ -256,7 +256,7 @@ public class EmulatorTests
     [Test]
     public void RiscVEmu_bge()
     {
-        RunTest(m => 
+        RunTest(m =>
         {
             m.asm(addi, 4, 0, 1);
             m.asm(bge, 4, 0, 8);
@@ -300,7 +300,7 @@ public class EmulatorTests
     [Test]
     public void RiscVEmu_lui()
     {
-        RunTest(m => 
+        RunTest(m =>
         {
             m.asm(lui, 1, 0x12345, 0);
             m.asm(addi, 1, 1, 0x678);
@@ -311,7 +311,7 @@ public class EmulatorTests
     [Test]
     public void RiscVEmu_auipc()
     {
-        RunTest(m => 
+        RunTest(m =>
         {
             m.asm(auipc, 1, 0x12345, 0);
             m.asm(addi, 1, 1, 0x678);
@@ -319,267 +319,2486 @@ public class EmulatorTests
         Assert.AreEqual(0x12345678, emu.Registers[1]);
     }
 
-/*
-/imm[31:12] rd 0110111/lui/
-/imm[31:12] rd 0010111/auipc/
-/imm[20|10:1|11|19:12] rd 1101111/jal/
-/imm[11:0] rs1 000 rd 1100111/jalr/
-/imm[12|10:5] rs2 rs1 000 imm[4:1|11] 1100011/beq/
-/imm[12|10:5] rs2 rs1 001 imm[4:1|11] 1100011/bne/
-/imm[12|10:5] rs2 rs1 100 imm[4:1|11] 1100011/blt/
-/imm[12|10:5] rs2 rs1 101 imm[4:1|11] 1100011/bge/
-/imm[12|10:5] rs2 rs1 110 imm[4:1|11] 1100011/bltu/
-/imm[12|10:5] rs2 rs1 111 imm[4:1|11] 1100011/bgeu/
-/imm[11:0] rs1 000 rd 0000011/lb/
-/imm[11:0] rs1 001 rd 0000011/lh/
-/imm[11:0] rs1 010 rd 0000011/lw/
-/imm[11:0] rs1 100 rd 0000011/lbu/
-/imm[11:0] rs1 101 rd 0000011/lhu/
-/imm[11:5] rs2 rs1 000 imm[4:0] 0100011/sb/
-/imm[11:5] rs2 rs1 001 imm[4:0] 0100011/sh/
-/imm[11:5] rs2 rs1 010 imm[4:0] 0100011/sw/
-/imm[11:0] rs1 000 rd 0010011/addi/
-/imm[11:0] rs1 010 rd 0010011/slti/
-/imm[11:0] rs1 011 rd 0010011/sltiu/
-/imm[11:0] rs1 100 rd 0010011/xori/
-/imm[11:0] rs1 110 rd 0010011/ori/
-/imm[11:0] rs1 111 rd 0010011/andi/
-/0000000 shamt rs1 001 rd 0010011/slli/
-/0000000 shamt rs1 101 rd 0010011/srli/
-/0100000 shamt rs1 101 rd 0010011/srai/
-/0000000 rs2 rs1 000 rd 0110011/add/
-/0100000 rs2 rs1 000 rd 0110011/sub/
-/0000000 rs2 rs1 001 rd 0110011/sll/
-/0000000 rs2 rs1 010 rd 0110011/slt/
-/0000000 rs2 rs1 011 rd 0110011/sltu/
-/0000000 rs2 rs1 100 rd 0110011/xor/
-/0000000 rs2 rs1 101 rd 0110011/srl/
-/0100000 rs2 rs1 101 rd 0110011/sra/
-/0000000 rs2 rs1 110 rd 0110011/or/
-/0000000 rs2 rs1 111 rd 0110011/and/
-/1000 0011 0011 00000 000 00000 0001111/fence.tso/
-/0000 0001 0000 00000 000 00000 0001111/pause/
-/000000000000 00000 000 00000 1110011/ecall/
-/000000000001 00000 000 00000 1110011/ebreak/
 
-/imm[11:0] rs1 110 rd 0000011/lwu/
-/imm[11:0] rs1 011 rd 0000011/ld/
-/imm[11:5] rs2 rs1 011 imm[4:0] 0100011/sd/
-/000000 shamt rs1 001 rd 0010011/slli/
-/000000 shamt rs1 101 rd 0010011/srli/
-/010000 shamt rs1 101 rd 0010011/srai/
-/imm[11:0] rs1 000 rd 0011011/addiw/
-/0000000 shamt rs1 001 rd 0011011/slliw/
-/0000000 shamt rs1 101 rd 0011011/srliw/
-/0100000 shamt rs1 101 rd 0011011/sraiw/
-/0000000 rs2 rs1 000 rd 0111011/addw/
-/0100000 rs2 rs1 000 rd 0111011/subw/
-/0000000 rs2 rs1 001 rd 0111011/sllw/
-/0000000 rs2 rs1 101 rd 0111011/srlw/
-/0100000 rs2 rs1 101 rd 0111011/sraw/
 
-//rv32/rv64 zifencei standard/extension
-/imm[11:0] rs1 001 rd 0001111/fence.i/
 
-// rv32/rv64 zicsr standard/extension
-/csr rs1 001 rd 1110011/csrrw/
-/csr rs1 010 rd 1110011/csrrs/
-/csr rs1 011 rd 1110011/csrrc/
-/csr uimm 101 rd 1110011/csrrwi/
-/csr uimm 110 rd 1110011/csrrsi/
-/csr uimm 111 rd 1110011/csrrci/
 
-// rv32m standard/extension
-/0000001 rs2 rs1 000 rd 0110011/mul/
-/0000001 rs2 rs1 001 rd 0110011/mulh/
-/0000001 rs2 rs1 010 rd 0110011/mulhsu/
-/0000001 rs2 rs1 011 rd 0110011/mulhu/
-/0000001 rs2 rs1 100 rd 0110011/div/
-/0000001 rs2 rs1 101 rd 0110011/divu/
-/0000001 rs2 rs1 110 rd 0110011/rem/
-/0000001 rs2 rs1 111 rd 0110011/remu/
 
-// rv64m standard extension (in addition to/rv32m)
-/0000001 rs2 rs1 000 rd 0111011/mulw/
-/0000001 rs2 rs1 100 rd 0111011/divw/
-/0000001 rs2 rs1 101 rd 0111011/divuw/
-/0000001 rs2 rs1 110 rd 0111011/remw/
-/0000001 rs2 rs1 111 rd 0111011/remuw/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_jal()
+    {
+        RunTest(m =>
+                {
 
-//rv32a standard/extension
-/00010 aq rl 00000 rs1 010 rd 0101111/lr.w/
-/00011 aq rl rs2 rs1 010 rd 0101111/sc.w/
-/00001 aq rl rs2 rs1 010 rd 0101111/amoswap.w/
-/00000 aq rl rs2 rs1 010 rd 0101111/amoadd.w/
-/00100 aq rl rs2 rs1 010 rd 0101111/amoxor.w/
-/01100 aq rl rs2 rs1 010 rd 0101111/amoand.w/
-/01000 aq rl rs2 rs1 010 rd 0101111/amoor.w/
-/10000 aq rl rs2 rs1 010 rd 0101111/amomin.w/
-/10100 aq rl rs2 rs1 010 rd 0101111/amomax.w/
-/11000 aq rl rs2 rs1 010 rd 0101111/amominu.w/
-/11100 aq rl rs2 rs1 010 rd 0101111/amomaxu.w/
-/rv64a standard extension (in addition to/rv32a)/
-/00010 aq rl 00000 rs1 011 rd 0101111/lr.d/
-/00011 aq rl rs2 rs1 011 rd 0101111/sc.d/
-/00001 aq rl rs2 rs1 011 rd 0101111/amoswap.d/
-/00000 aq rl rs2 rs1 011 rd 0101111/amoadd.d/
-/00100 aq rl rs2 rs1 011 rd 0101111/amoxor.d/
-/01100 aq rl rs2 rs1 011 rd 0101111/amoand.d/
-/01000 aq rl rs2 rs1 011 rd 0101111/amoor.d/
-/10000 aq rl rs2 rs1 011 rd 0101111/amomin.d/
-/10100 aq rl rs2 rs1 011 rd 0101111/amomax.d/
-/11000 aq rl rs2 rs1 011 rd 0101111/amominu.d/
-/11100 aq rl rs2 rs1 011 rd 0101111/amomaxu.d/
+                    m.asm(jal, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
 
-//rv32f standard/extension/
-/imm[11:0] rs1 010 rd 0000111/flw/
-/imm[11:5] rs2 rs1 010 imm[4:0] 0100111/fsw/
-/rs3 00 rs2 rs1 rm rd 1000011/fmadd.s/
-/rs3 00 rs2 rs1 rm rd 1000111/fmsub.s/
-/rs3 00 rs2 rs1 rm rd 1001011/fnmsub.s/
-/rs3 00 rs2 rs1 rm rd 1001111/fnmadd.s/
-/0000000 rs2 rs1 rm rd 1010011/fadd.s/
-/0000100 rs2 rs1 rm rd 1010011/fsub.s/
-/0001000 rs2 rs1 rm rd 1010011/fmul.s/
-/0001100 rs2 rs1 rm rd 1010011/fdiv.s/
-/0101100 00000 rs1 rm rd 1010011/fsqrt.s/
-/0010000 rs2 rs1 000 rd 1010011/fsgnj.s/
-/0010000 rs2 rs1 001 rd 1010011/fsgnjn.s/
-/0010000 rs2 rs1 010 rd 1010011/fsgnjx.s/
-/0010100 rs2 rs1 000 rd 1010011/fmin.s/
-/0010100 rs2 rs1 001 rd 1010011/fmax.s/
-/1100000 00000 rs1 rm rd 1010011/fcvt.w.s/
-/1100000 00001 rs1 rm rd 1010011/fcvt.wu.s/
-/1110000 00000 rs1 000 rd 1010011/fmv.x.w/
-/1010000 rs2 rs1 010 rd 1010011/feq.s/
-/1010000 rs2 rs1 001 rd 1010011/flt.s/
-/1010000 rs2 rs1 000 rd 1010011/fle.s/
-/1110000 00000 rs1 001 rd 1010011/fclass.s/
-/1101000 00000 rs1 rm rd 1010011/fcvt.s.w/
-/1101000 00001 rs1 rm rd 1010011/fcvt.s.wu/
-/1111000 00000 rs1 000 rd 1010011/fmv.w.x/
-// rv64f standard extension (in addition to/rv32f)/
-/1100000 00010 rs1 rm rd 1010011/fcvt.l.s/
-/1100000 00011 rs1 rm rd 1010011/fcvt.lu.s/
-/1101000 00010 rs1 rm rd 1010011/fcvt.s.l/
-/1101000 00011 rs1 rm rd 1010011/fcvt.s.lu/
 
-//rv32d standard/extension/
-/imm[11:0] rs1 011 rd 0000111/fld/
-/imm[11:5] rs2 rs1 011 imm[4:0] 0100111/fsd/
-/rs3 01 rs2 rs1 rm rd 1000011/fmadd.d/
-/rs3 01 rs2 rs1 rm rd 1000111/fmsub.d/
-/rs3 01 rs2 rs1 rm rd 1001011/fnmsub.d/
-/rs3 01 rs2 rs1 rm rd 1001111/fnmadd.d/
-/0000001 rs2 rs1 rm rd 1010011/fadd.d/
-/0000101 rs2 rs1 rm rd 1010011/fsub.d/
-/0001001 rs2 rs1 rm rd 1010011/fmul.d/
-/0001101 rs2 rs1 rm rd 1010011/fdiv.d/
-/0101101 00000 rs1 rm rd 1010011/fsqrt.d/
-/0010001 rs2 rs1 000 rd 1010011/fsgnj.d/
-/0010001 rs2 rs1 001 rd 1010011/fsgnjn.d/
-/0010001 rs2 rs1 010 rd 1010011/fsgnjx.d/
-/0010101 rs2 rs1 000 rd 1010011/fmin.d/
-/0010101 rs2 rs1 001 rd 1010011/fmax.d/
-/0100000 00001 rs1 rm rd 1010011/fcvt.s.d/
-/0100001 00000 rs1 rm rd 1010011/fcvt.d.s/
-/1010001 rs2 rs1 010 rd 1010011/feq.d/
-/1010001 rs2 rs1 001 rd 1010011/flt.d/
-/1010001 rs2 rs1 000 rd 1010011/fle.d/
-/1110001 00000 rs1 001 rd 1010011/fclass.d/
-/1100001 00000 rs1 rm rd 1010011/fcvt.w.d/
-/1100001 00001 rs1 rm rd 1010011/fcvt.wu.d/
-/1101001 00000 rs1 rm rd 1010011/fcvt.d.w/
-/1101001 00001 rs1 rm rd 1010011/fcvt.d.wu/
 
-//rv64d standard extension (in addition to/rv32d)/
-/1100001 00010 rs1 rm rd 1010011/fcvt.l.d/
-/1100001 00011 rs1 rm rd 1010011/fcvt.lu.d/
-/1110001 00000 rs1 000 rd 1010011/fmv.x.d/
-/1101001 00010 rs1 rm rd 1010011/fcvt.d.l/
-/1101001 00011 rs1 rm rd 1010011/fcvt.d.lu/
-/1111001 00000 rs1 000 rd 1010011/fmv.d.x/
 
-//rv32q standard/extension/
-/imm[11:0] rs1 100 rd 0000111/flq/
-/imm[11:5] rs2 rs1 100 imm[4:0] 0100111/fsq/
-/rs3 11 rs2 rs1 rm rd 1000011/fmadd.q/
-/rs3 11 rs2 rs1 rm rd 1000111/fmsub.q/
-/rs3 11 rs2 rs1 rm rd 1001011/fnmsub.q/
-/rs3 11 rs2 rs1 rm rd 1001111/fnmadd.q/
-/0000011 rs2 rs1 rm rd 1010011/fadd.q/
-/0000111 rs2 rs1 rm rd 1010011/fsub.q/
-/0001011 rs2 rs1 rm rd 1010011/fmul.q/
-/0001111 rs2 rs1 rm rd 1010011/fdiv.q/
-/0101111 00000 rs1 rm rd 1010011/fsqrt.q/
-/0010011 rs2 rs1 000 rd 1010011/fsgnj.q/
-/0010011 rs2 rs1 001 rd 1010011/fsgnjn.q/
-/0010011 rs2 rs1 010 rd 1010011/fsgnjx.q/
-/0010111 rs2 rs1 000 rd 1010011/fmin.q/
-/0010111 rs2 rs1 001 rd 1010011/fmax.q/
-/0100000 00011 rs1 rm rd 1010011/fcvt.s.q/
-/0100011 00000 rs1 rm rd 1010011/fcvt.q.s/
-/0100001 00011 rs1 rm rd 1010011/fcvt.d.q/
-/0100011 00001 rs1 rm rd 1010011/fcvt.q.d/
-/1010011 rs2 rs1 010 rd 1010011/feq.q/
-/1010011 rs2 rs1 001 rd 1010011/flt.q/
-/1010011 rs2 rs1 000 rd 1010011/fle.q/
-/1110011 00000 rs1 001 rd 1010011/fclass.q/
-/1100011 00000 rs1 rm rd 1010011/fcvt.w.q/
-/1100011 00001 rs1 rm rd 1010011/fcvt.wu.q/
-/1101011 00000 rs1 rm rd 1010011/fcvt.q.w/
-/1101011 00001 rs1 rm rd 1010011/fcvt.q.wu/
 
-//rv64q standard extension (in addition to/rv32q)/
-/1100011 00010 rs1 rm rd 1010011/fcvt.l.q/
-/1100011 00011 rs1 rm rd 1010011/fcvt.lu.q/
-/1101011 00010 rs1 rm rd 1010011/fcvt.q.l/
-/1101011 00011 rs1 rm rd 1010011/fcvt.q.lu/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_beq()
+    {
+        RunTest(m =>
+                {
 
-//rv32zfh standard/extension/
-/imm[11:0] rs1 001 rd 0000111/flh/
-/imm[11:5] rs2 rs1 001 imm[4:0] 0100111/fsh/
-/rs3 10 rs2 rs1 rm rd 1000011/fmadd.h/
-/rs3 10 rs2 rs1 rm rd 1000111/fmsub.h/
-/rs3 10 rs2 rs1 rm rd 1001011/fnmsub.h/
-/rs3 10 rs2 rs1 rm rd 1001111/fnmadd.h/
-/0000010 rs2 rs1 rm rd 1010011/fadd.h/
-/0000110 rs2 rs1 rm rd 1010011/fsub.h/
-/0001010 rs2 rs1 rm rd 1010011/fmul.h/
-/0001110 rs2 rs1 rm rd 1010011/fdiv.h/
-/0101110 00000 rs1 rm rd 1010011/fsqrt.h/
-/0010010 rs2 rs1 000 rd 1010011/fsgnj.h/
-/0010010 rs2 rs1 001 rd 1010011/fsgnjn.h/
-/0010010 rs2 rs1 010 rd 1010011/fsgnjx.h/
-/0010110 rs2 rs1 000 rd 1010011/fmin.h/
-/0010110 rs2 rs1 001 rd 1010011/fmax.h/
-/0100000 00010 rs1 rm rd 1010011/fcvt.s.h/
-/0100010 00000 rs1 rm rd 1010011/fcvt.h.s/
-/0100001 00010 rs1 rm rd 1010011/fcvt.d.h/
-/0100010 00001 rs1 rm rd 1010011/fcvt.h.d/
-/0100011 00010 rs1 rm rd 1010011/fcvt.q.h/
-/0100010 00011 rs1 rm rd 1010011/fcvt.h.q/
-/1010010 rs2 rs1 010 rd 1010011/feq.h/
-/1010010 rs2 rs1 001 rd 1010011/flt.h/
-/1010010 rs2 rs1 000 rd 1010011/fle.h/
-/1110010 00000 rs1 001 rd 1010011/fclass.h/
-/1100010 00000 rs1 rm rd 1010011/fcvt.w.h/
-/1100010 00001 rs1 rm rd 1010011/fcvt.wu.h/
-/1110010 00000 rs1 000 rd 1010011/fmv.x.h/
-/1101010 00000 rs1 rm rd 1010011/fcvt.h.w/
-/1101010 00001 rs1 rm rd 1010011/fcvt.h.wu/
-/1111010 00000 rs1 000 rd 1010011/fmv.h.x/
+                    m.asm(beq, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
 
-//rv64zfh standard extension (in addition to/rv32zfh)
-/1100010 00010 rs1 rm rd 1010011/fcvt.l.h/
 
-//rv64zfh standard extension (in addition to/rv32zfh)/
-/1100010 00011 rs1 rm rd 1010011/fcvt.lu.h/
-/1101010 00010 rs1 rm rd 1010011/fcvt.h.l/
-/1101010 00011 rs1 rm rd 1010011/fcvt.h.lu/
 
-//zawrs standard/extension/
-/000000001101 00000 000 00000 1110011/wrs.nto/
-/000000011101 00000 000 00000 1110011/wrs.sto/
-*/
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_blt()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(blt, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_bltu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(bltu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_bgeu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(bgeu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_slti()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(slti, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sltiu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sltiu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_xori()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(xori, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_ori()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(ori, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_andi()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(andi, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_slli()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(slli, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_srli()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(srli, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_srai()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(srai, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sub()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sub, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sll()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sll, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_slt()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(slt, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sltu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sltu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_xor()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(xor, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_srl()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(srl, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sra()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sra, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_or()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(or, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_and()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(and, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fence_tso()
+    {
+        RunTest(m =>
+           {
+               m.asm(fence_tso, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_pause()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(pause, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_ebreak()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(ebreak, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_lwu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(lwu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_ld()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(ld, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sd()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sd, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_addiw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(addiw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_slliw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(slliw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_srliw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(srliw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sraiw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sraiw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_addw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(addw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_subw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(subw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sllw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sllw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_srlw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(srlw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sraw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(sraw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fence_i()
+    {
+        RunTest(m =>
+           {
+               m.asm(fence_i, -1, -1, -1);
+           });
+    }
+
+
+
+    // rv32/rv64 zicsr standard/extension
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrs()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrs, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrc()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrc, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrwi()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrwi, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrsi()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrsi, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_csrrci()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(csrrci, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_mulh()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(mulh, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_mulhsu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(mulhsu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_mulhu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(mulhu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_div()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(div, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_divu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(divu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_rem()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(rem, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_remu()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(remu, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+    // rv64m standard extension (in addition to/rv32m)
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_mulw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(mulw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_divw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(divw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_divuw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(divuw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_remw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(remw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_remuw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(remuw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+
+    //rv32a standard/extension
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_lr_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(lr_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sc_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(sc_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amosw_p_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoswap_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoadd_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoadd_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoxor_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoxor_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoand_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoand_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoor_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoor_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomin_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomin_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomax_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomax_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amominu_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amominu_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomaxu_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomaxu_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_lr_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(lr_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_sc_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(sc_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoswap_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoswap_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoadd_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoadd_d, -1, -1, -1);
+           });
+    }
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoand_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoand_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoxor_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoxor_d, -1, -1, -1);
+           });
+    }
+
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amoor_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amoor_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomin_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomin_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomax_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomax_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amominu_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amominu_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_amomaxu_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(amomaxu_d, -1, -1, -1);
+           });
+    }
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(flw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsw()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(fsw, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmadd_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmadd_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmsub_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmsub_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmsub_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmsub_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmadd_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmadd_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fadd_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fadd_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsub_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsub_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmul_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmul_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fdiv_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fdiv_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsqrt_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsqrt_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnj_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnj_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjn_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjn_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjx_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjx_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmin_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmin_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmax_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmax_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_w_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_w_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_wu_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_wu_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_x_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_x_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_feq_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(feq_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flt_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(flt_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fle_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fle_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fclass_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fclass_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_wu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_wu, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_w_x()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_w_x, -1, -1, -1);
+           });
+    }
+
+
+    // rv64f standard extension (in addition to/rv32f)/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_l_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_l_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_lu_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_lu_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_l()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_l, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_lu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_lu, -1, -1, -1);
+           });
+    }
+
+
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fld()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(fld, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsd()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(fsd, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmadd_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmadd_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmsub_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmsub_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmsub_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmsub_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmadd_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmadd_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fadd_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fadd_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsub_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsub_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmul_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmul_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fdiv_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fdiv_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsqrt_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsqrt_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnj_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnj_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjn_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjn_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjx_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjx_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmin_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmin_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmax_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmax_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_feq_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(feq_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flt_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(flt_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fle_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fle_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fclass_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fclass_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_w_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_w_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_wu_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_wu_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_wu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_wu, -1, -1, -1);
+           });
+    }
+
+
+
+    //rv64d standard extension (in addition to/rv32d)/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_l_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_l_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_lu_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_lu_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_x_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_x_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_l()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_l, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_lu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_lu, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_d_x()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_d_x, -1, -1, -1);
+           });
+    }
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flq()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(flq, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsq()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(fsq, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmadd_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmadd_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmsub_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmsub_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmsub_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmsub_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmadd_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmadd_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fadd_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fadd_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsub_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsub_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmul_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmul_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fdiv_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fdiv_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsqrt_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsqrt_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnj_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnj_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjn_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjn_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjx_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjx_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmin_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmin_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmax_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmax_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_feq_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(feq_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flt_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(flt_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fle_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fle_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fclass_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fclass_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_w_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_w_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_wu_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_wu_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_wu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_wu, -1, -1, -1);
+           });
+    }
+
+
+
+    //rv64q standard extension (in addition to/rv32q)/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_l_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_l_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_lu_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_lu_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_l()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_l, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_lu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_lu, -1, -1, -1);
+           });
+    }
+
+
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flh()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(flh, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsh()
+    {
+        RunTest(m =>
+                {
+
+                    m.asm(fsh, -1, -1, -1);
+                });
+        Assert.Fail("Not implemented");
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmadd_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmadd_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmsub_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmsub_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmsub_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmsub_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fnmadd_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fnmadd_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fadd_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fadd_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsub_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsub_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmul_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmul_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fdiv_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fdiv_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsqrt_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsqrt_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnj_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnj_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjn_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjn_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fsgnjx_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fsgnjx_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmin_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmin_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmax_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmax_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_s_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_s_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_s()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_s, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_d_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_d_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_d()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_d, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_q_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_q_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_q()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_q, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_feq_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(feq_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_flt_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(flt_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fle_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fle_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fclass_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fclass_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_w_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_w_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_wu_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_wu_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_x_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_x_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_w()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_w, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_wu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_wu, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fmv_h_x()
+    {
+        RunTest(m =>
+           {
+               m.asm(fmv_h_x, -1, -1, -1);
+           });
+    }
+
+
+
+    //rv64zfh standard extension (in addition to/rv32zfh)
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_l_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_l_h, -1, -1, -1);
+           });
+    }
+
+
+
+    //rv64zfh standard extension (in addition to/rv32zfh)/
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_lu_h()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_lu_h, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_l()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_l, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_fcvt_h_lu()
+    {
+        RunTest(m =>
+           {
+               m.asm(fcvt_h_lu, -1, -1, -1);
+           });
+    }
+
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_wrs_nto()
+    {
+        RunTest(m =>
+           {
+               m.asm(wrs_nto, -1, -1, -1);
+           });
+    }
+
+
+    [Test]
+    [Ignore("nyi")]
+    public void RiscVEmu_wrs_sto()
+    {
+        RunTest(m =>
+           {
+               m.asm(wrs_sto, -1, -1, -1);
+           });
+    }
 }
