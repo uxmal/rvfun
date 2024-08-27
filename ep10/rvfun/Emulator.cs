@@ -101,27 +101,28 @@ public class Emulator
                 imm = bfImm20.ExtractSigned(uInstr);
                 dst = bfDst.ExtractUnsigned(uInstr);
                 ea = (uint)(this.Registers[src1] + imm);
+                int value;
                 switch (funct3)
                 {
                     case 0b000: // lb
-                        WriteRegister(dst, (sbyte)mem.ReadByte(ea));
+                        value = (sbyte)mem.ReadByte(ea);
                         break;
                     case 0b001: // lh
-                        WriteRegister(dst, (short)mem.ReadLeWord16(ea));
+                        value = (short)mem.ReadLeWord16(ea);
                         break;
                     case 0b010: // lw
-                        WriteRegister(dst, (int)mem.ReadLeWord32(ea));
+                        value = (int)mem.ReadLeWord32(ea);
                         break;
                     case 0b100: // lbu
-                        WriteRegister(dst, mem.ReadByte(ea));
+                        value = mem.ReadByte(ea);
                         break;
                     case 0b101: // lhu
-                        WriteRegister(dst, (ushort)mem.ReadLeWord16(ea));
+                        value = (ushort)mem.ReadLeWord16(ea);
                         break;
-
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
+                WriteRegister(dst, value);
                 break;
 
             case 0b0110011:
@@ -130,17 +131,18 @@ public class Emulator
                 src2 = bfSrc2.ExtractUnsigned(uInstr);
                 dst = bfDst.ExtractUnsigned(uInstr);
                 funct7 = bfFunct7.ExtractUnsigned(uInstr);
-
+                var src1Value = x[src1];
+                var src2Value = x[src2];
                 switch (funct3)
                 {
                     case 0:
                         switch (funct7)
                         {
                             case 0:
-                                WriteRegister(dst, x[src1] + x[src2]);
+                                value = src1Value + src2Value;
                                 break;
                             case 1:
-                                WriteRegister(dst, x[src1] * x[src2]);
+                                value = src1Value * src2Value;
                                 break;
                             default:
                                 throw new InvalidOperationException($"Unknown funct7 {Convert.ToString(funct7, 2)}");
@@ -149,6 +151,7 @@ public class Emulator
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
+                WriteRegister(dst, value);
                 break;
 
             case 0b0010011:
@@ -156,17 +159,19 @@ public class Emulator
                 src1 = bfSrc1.ExtractUnsigned(uInstr);
                 imm = bfImm20.ExtractSigned(uInstr);
                 dst = bfDst.ExtractUnsigned(uInstr);
+                src1Value = x[src1];
                 switch (funct3)
                 {
                     case 0b000: // addi
-                        WriteRegister(dst, x[src1] + imm);
+                        value = src1Value + imm;
                         break;
                     case 0b010: // slti
-                        WriteRegister(dst, x[src1] < imm ? 1 : 0);
+                        value = src1Value < imm ? 1 : 0;
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
                 }
+                WriteRegister(dst, value);
                 break;
             case 0b0010111: // auipc
                 dst = bfDst.ExtractUnsigned(uInstr);
@@ -179,17 +184,18 @@ public class Emulator
                 src1 = bfSrc1.ExtractUnsigned(uInstr);
                 imm = BitField.ExtractSigned(uInstr, bitFieldsSimm);
                 src2 = bfSrc2.ExtractUnsigned(uInstr);
+                src2Value = Registers[src2];
                 ea = (uint)(this.Registers[src1] + imm);
                 switch (funct3)
                 {
                     case 0b000: // sb
-                        this.mem.WriteByte(ea, (byte)Registers[src2]);
+                        this.mem.WriteByte(ea, (byte)src2Value);
                         break;
                     case 0b001: // sh
-                        this.mem.WriteLeWord16(ea, (ushort)Registers[src2]);
+                        this.mem.WriteLeWord16(ea, (ushort)src2Value);
                         break;
                     case 0b010: // sw
-                        this.mem.WriteLeWord32(ea, (uint)Registers[src2]);
+                        this.mem.WriteLeWord32(ea, (uint)src2Value);
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
@@ -200,22 +206,23 @@ public class Emulator
                 src1 = bfSrc1.ExtractUnsigned(uInstr);
                 src2 = bfSrc2.ExtractUnsigned(uInstr);
                 imm = BitField.ExtractSigned(uInstr, bitFieldsBimm) << 1;
+                bool predicate;
+                src1Value = Registers[src1];
+                src2Value = Registers[src2];
                 switch (funct3)
                 {
                     case 0b001:     // bne
-                        if (Registers[src1] != Registers[src2])
-                        {
-                            iptrNext = iptr + (uint)imm;
-                        }
+                        predicate = src1Value != src2Value;
                         break;
                     case 0b101:     // bge
-                        if (Registers[src1] >= Registers[src2])
-                        {
-                            iptrNext = iptr + (uint)imm;
-                        }
+                        predicate = src1Value >= src2Value;
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown funct3 {Convert.ToString(funct3, 2)}");
+                }
+                if (predicate)
+                {
+                    iptrNext = iptr + (uint)imm;
                 }
                 break;
             case 0b0110111: // lui
@@ -252,8 +259,8 @@ public class Emulator
                     case 0: // ecall
                         osEmulator.Trap(this);
                         break;
-                        default:
-                throw new InvalidOperationException($"Unknown system instruction {Convert.ToString(opcode, 2)}");
+                    default:
+                        throw new InvalidOperationException($"Unknown system instruction {Convert.ToString(opcode, 2)}");
                 }
                 break;
             default:

@@ -27,145 +27,145 @@ public class Assembler
         switch (operation)
         {
             case Mnemonics.add:
-                asmR(0b0110011, 0, 0, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2); break;
             case Mnemonics.addi:
-                asmI(0b0010011, 0b000, dst, src1, src2); break;
+                asmI(0b000_00000_0010011, dst, src1, src2); break;
             case Mnemonics.addiw:
-                asmI(0b0011011, 0b000, dst, src1, src2); break;
+                asmI(0b000_00000_0011011, dst, src1, src2); break;
             case Mnemonics.addw:
-                asmR(0b0111011, 0, 0, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_000_00000_0111011, dst, src1, src2); break;
             case Mnemonics.and:
-                asmR(0b0110011, 0b111, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_111_00000_0110011, dst, src1, src2); break;
             case Mnemonics.andi:
-                asmI(0b0010011, 0b111, dst, src1, src2); break;
+                asmI(0b111_00000_0010011, dst, src1, src2); break;
             case Mnemonics.auipc:
                 asmU(0b0010111, dst, src1); break;
             case Mnemonics.beq:
-                asmB(0b1100011, 0b000, dst, src1, src2); break;
+                asmB(0b000_00000_1100011, dst, src1, src2); break;
             case Mnemonics.bge:
-                asmB(0b1100011, 0b101, dst, src1, src2); break;
+                asmB(0b101_00000_1100011, dst, src1, src2); break;
             case Mnemonics.bgeu:
-                asmB(0b1100011, 0b111, dst, src1, src2); break;
+                asmB(0b111_00000_1100011, dst, src1, src2); break;
             case Mnemonics.blt:
-                asmB(0b1100011, 0b100, dst, src1, src2); break;
+                asmB(0b100_00000_1100011, dst, src1, src2); break;
             case Mnemonics.bltu:
-                asmB(0b1100011, 0b110, dst, src1, src2); break;
+                asmB(0b110_00000_1100011, dst, src1, src2); break;
             case Mnemonics.bne:
-                asmB(0b1100011, 0b001, dst, src1, src2); break;
+                asmB(0b001_00000_1100011, dst, src1, src2); break;
             case Mnemonics.csrrc:
-                asmI(0b1110011, 0b011, dst, src1, src2); break;
+                asmI(0b011_00000_1110011, dst, src1, src2); break;
             case Mnemonics.csrrci:
-                asmI(0b1110011, 0b111, dst, src1, src2); break;
+                asmI(0b111_00000_1110011, dst, src1, src2); break;
             case Mnemonics.csrrs:
-                asmI(0b1110011, 0b010, dst, src1, src2); break;
+                asmI(0b010_00000_1110011, dst, src1, src2); break;
             case Mnemonics.csrrsi:
-                asmI(0b1110011, 0b110, dst, src1, src2); break;
+                asmI(0b110_00000_1110011, dst, src1, src2); break;
             case Mnemonics.csrrw:
-                asmI(0b1110011, 0b001, dst, src1, src2); break;
+                asmI(0b001_00000_1110011, dst, src1, src2); break;
             case Mnemonics.csrrwi:
-                asmI(0b1110011, 0b101, dst, src1, src2); break;
+                asmI(0b101_00000_1110011, dst, src1, src2); break;
             case Mnemonics.div:
-                asmR(0b0110011, 0b100, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_100_00000_0110011, dst, src1, src2); break;
             case Mnemonics.divu:
-                asmR(0b0110011, 0b101, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_101_00000_0110011, dst, src1, src2); break;
             case Mnemonics.divuw:
-                asmR(0b0111011, 0b101, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_101_00000_0111011, dst, src1, src2); break;
             case Mnemonics.divw:
-                asmR(0b0111011, 0b100, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_100_00000_0111011, dst, src1, src2); break;
             case Mnemonics.ebreak:
-                asmI(0b1110011, 0b000, 0, 0, 1); break;
+                asmI(0b000_00000_1110011, 0, 0, 1); break;
             case Mnemonics.ecall:
-                asmI(0b1110011, 0b000, 0, 0, 0); break;
+                asmI(0b000_00000_1110011, 0, 0, 0); break;
             case Mnemonics.jal:
                 asmJ(0b1101111, dst, src1); break;
             case Mnemonics.jalr:
-                asmI(0b1100111, 0b000, dst, src1, src2); break;
+                asmI(0b000_00000_1100111, dst, src1, src2); break;
             case Mnemonics.lb:
-                asmI(0b0000011, 0b000, dst, src1, src2); break;
+                asmI(0b000_00000_0000011, dst, src1, src2); break;
             case Mnemonics.ld:
-                asmI(0b0000011, 0b011, dst, src1, src2); break;
+                asmI(0b011_00000_0000011, dst, src1, src2); break;
             case Mnemonics.lbu:
-                asmI(0b0000011, 0b100, dst, src1, src2); break;
+                asmI(0b100_00000_0000011, dst, src1, src2); break;
             case Mnemonics.lh:
-                asmI(0b0000011, 0b001, dst, src1, src2); break;
+                asmI(0b001_00000_0000011, dst, src1, src2); break;
             case Mnemonics.lhu:
-                asmI(0b0000011, 0b101, dst, src1, src2); break;
+                asmI(0b101_00000_0000011, dst, src1, src2); break;
             case Mnemonics.lui:
                 asmU(0b0110111, dst, src1); break;
             case Mnemonics.lw:
-                asmI(0b0000011, 0b010, dst, src1, src2); break;
+                asmI(0b010_00000_0000011, dst, src1, src2); break;
             case Mnemonics.lwu:
-                asmI(0b0000011, 0b110, dst, src1, src2); break;
+                asmI(0b110_00000_0000011, dst, src1, src2); break;
             case Mnemonics.mul:
-                asmR(0b0110011, 0b000, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_000_00000_0110011, dst, src1, src2); break;
             case Mnemonics.mulh:
-                asmR(0b0110011, 0b001, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_001_00000_0110011, dst, src1, src2); break;
             case Mnemonics.mulhsu:
-                asmR(0b0110011, 0b010, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_010_00000_0110011, dst, src1, src2); break;
             case Mnemonics.mulhu:
-                asmR(0b0110011, 0b011, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_011_00000_0110011, dst, src1, src2); break;
             case Mnemonics.mulw:
-                asmR(0b0111011, 0b000, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_000_00000_0111011, dst, src1, src2); break;
             case Mnemonics.rem:
-                asmR(0b0110011, 0b110, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_110_00000_0110011, dst, src1, src2); break;
             case Mnemonics.remu:
-                asmR(0b0110011, 0b111, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_111_00000_0110011, dst, src1, src2); break;
             case Mnemonics.remuw:
-                asmR(0b0111011, 0b111, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_111_00000_0111011, dst, src1, src2); break;
             case Mnemonics.remw:
-                asmR(0b0111011, 0b110, 0b0000001, dst, src1, src2); break;
+                asmR(0b0000001_0000000000_110_00000_0111011, dst, src1, src2); break;
             case Mnemonics.or:
-                asmR(0b0110011, 0b110, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_110_00000_0110011, dst, src1, src2); break;
             case Mnemonics.ori:
-                asmI(0b0010011, 0b110, dst, src1, src2); break;
+                asmI(0b110_00000_0010011, dst, src1, src2); break;
             case Mnemonics.sb:
-                asmS(0b0100011, 0b000, dst, src1, src2); break;
+                asmS(0b000_00000_0100011, dst, src1, src2); break;
             case Mnemonics.sd:
-                asmS(0b0100011, 0b011, dst, src1, src2); break;
+                asmS(0b011_00000_0100011, dst, src1, src2); break;
             case Mnemonics.sh:
-                asmS(0b0100011, 0b001, dst, src1, src2); break;
+                asmS(0b001_00000_0100011, dst, src1, src2); break;
             case Mnemonics.slt:
-                asmR(0b0110011, 0b010, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_010_00000_0110011, dst, src1, src2); break;
             case Mnemonics.slti:
-                asmI(0b0010011, 0b010, dst, src1, src2); break;
+                asmI(0b010_00000_0010011, dst, src1, src2); break;
             case Mnemonics.sltiu:
-                asmI(0b0010011, 0b011, dst, src1, src2); break;
+                asmI(0b011_00000_0010011, dst, src1, src2); break;
             case Mnemonics.sltu:
-                asmR(0b0110011, 0b011, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_011_00000_0110011, dst, src1, src2); break;
             case Mnemonics.sll:
-                asmR(0b0110011, 0b001, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_001_00000_0110011, dst, src1, src2); break;
             case Mnemonics.slli:
-                asmR(0b0010011, 0b001, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_001_00000_0010011, dst, src1, src2); break;
             case Mnemonics.slliw:
-                asmR(0b0011011, 0b001, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_001_00000_0011011, dst, src1, src2); break;
             case Mnemonics.sllw:
-                asmR(0b0111011, 0b001, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_001_00000_0111011, dst, src1, src2); break;
             case Mnemonics.sra:
-                asmR(0b0110011, 0b101, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_101_00000_0110011, dst, src1, src2); break;
             case Mnemonics.srai:
-                asmR(0b0010011, 0b101, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_101_00000_0010011, dst, src1, src2); break;
             case Mnemonics.sraiw:
-                asmR(0b00011011, 0b101, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_101_00000_0011011, dst, src1, src2); break;
             case Mnemonics.sraw:
-                asmR(0b00111011, 0b101, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_101_00000_0111011, dst, src1, src2); break;
             case Mnemonics.srli:
-                asmR(0b0010011, 0b101, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_101_00000_0010011, dst, src1, src2); break;
             case Mnemonics.srliw:
-                asmR(0b0011011, 0b101, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_101_00000_0011011, dst, src1, src2); break;
             case Mnemonics.srl:
-                asmR(0b0110011, 0b101, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_101_00000_0110011, dst, src1, src2); break;
             case Mnemonics.srlw:
-                asmR(0b0111011, 0b101, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_101_00000_0111011, dst, src1, src2); break;
             case Mnemonics.sub:
-                asmR(0b0110011, 0b000, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_000_00000_0110011, dst, src1, src2); break;
             case Mnemonics.subw:
-                asmR(0b0111011, 0b000, 0b0100000, dst, src1, src2); break;
+                asmR(0b0100000_0000000000_000_00000_0111011, dst, src1, src2); break;
             case Mnemonics.sw:
-                asmS(0b0100011, 0b010, dst, src1, src2); break;
+                asmS(0b010_00000_0100011, dst, src1, src2); break;
             case Mnemonics.xor:
-                asmR(0b0110011, 0b100, 0b0000000, dst, src1, src2); break;
+                asmR(0b0000000_0000000000_100_00000_0110011, dst, src1, src2); break;
             case Mnemonics.xori:
-                asmI(0b0010011, 0b100, dst, src1, src2); break;
+                asmI(0b100_00000_0010011, dst, src1, src2); break;
 
             case Mnemonics.Invalid:
                 memory.WriteLeWord32(instrPtr, 0);
@@ -193,10 +193,9 @@ public class Assembler
         instrPtr += 4;
     }
 
-    private void asmB(uint opcode, uint func3, int src1, int src2, int offset)
+    private void asmB(uint opcode, int src1, int src2, int offset)
     {
         uint uInstr = opcode;
-        uInstr |= func3 << 12;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
         uint uOffset = (uint) offset;
@@ -212,11 +211,10 @@ public class Assembler
         instrPtr += 4;
     }
 
-    private void asmS(uint opcode, uint func3, int src2, int baseReg, int offset)
+    private void asmS(uint opcode, int src2, int baseReg, int offset)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(offset & 0b11111) << 7;
-        uInstr |= func3 << 12;
         uInstr |= (uint)(baseReg & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
         uInstr |= (uint)(offset >> 5) << 25;
@@ -226,10 +224,9 @@ public class Assembler
 
     // Assembles a Risc-V I-type instruction.
 
-    private void asmI(uint opcode, uint func3, int dst, int src1, int src2)
+    private void asmI(uint opcode, int dst, int src1, int src2)
     {
         uint uInstr = opcode;
-        uInstr |= (func3 << 12);
         uInstr |= (uint) (dst & 0b11111) << 7;
         uInstr |= (uint) (src1 & 0b11111) << 15;
         uInstr |= (uint) src2 << 20;
@@ -238,11 +235,9 @@ public class Assembler
     }
 
     // Assembles a Risc-V R-type instruction.
-    private void asmR(uint opcode, uint func3, uint func7, int dst, int src1, int src2)
+    private void asmR(uint opcode, int dst, int src1, int src2)
     {
         uint uInstr = opcode;
-        uInstr |= (func3 << 12);
-        uInstr |= (func7 << 25);
         uInstr |= (uint) (dst & 0b11111) << 7;
         uInstr |= (uint) (src1 & 0b11111) << 15;
         uInstr |= (uint) (src2 & 0b11111) << 20;
