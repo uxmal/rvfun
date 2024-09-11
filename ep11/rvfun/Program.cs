@@ -8,15 +8,15 @@ var x = new int[32];
 
 var m = new Assembler(mem);
 
-m.asm(addi, 17, 0, OsEmulator.SYSCALL_WRITE);   // select the 'write' system call
-m.asm(addi, 10, 0, 1);                          // use handle 1 = stdout
-m.asm(addi, 11, 0, 32);                         // x11 has pointer to buffer.
-m.asm(addi, 12, 0, 14);                         // x12 has number of bytes to write.
-m.asm(ecall, 0, 0, 0);                          // do the write
+m.li(17, OsEmulator.SYSCALL_WRITE);   // select the 'write' system call
+m.li(10, 1);                          // use handle 1 = stdout
+m.li(11, 32);                         // x11 has pointer to buffer.
+m.li(12, 14);                         // x12 has number of bytes to write.
+m.ecall(0, 0, 0);                          // do the write
 
-m.asm(addi, 10, 0, 0);                          // exit code = 0;
-m.asm(addi, 17, 0, OsEmulator.SYSCALL_EXIT);    // select the 'exit' system call
-m.asm(ecall, 0, 0, 0);
+m.li(10, 0);                          // exit code = 0;
+m.li(17,  OsEmulator.SYSCALL_EXIT);    // select the 'exit' system call
+m.ecall(0, 0, 0);
 m.ds("Hello, world!\n\0");
 
 var osemu = new OsEmulator(mem);

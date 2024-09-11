@@ -22,6 +22,293 @@ public class Assembler
         this.instrPtr = 0;
     }
 
+            public void add(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2);
+}
+
+            public void addi(int dst, int src1, int src2) {
+                asmI(0b000_00000_0010011, dst, src1, src2);
+    }
+
+            public void addiw(int dst, int src1, int src2) {
+                asmI(0b000_00000_0011011, dst, src1, src2);
+    }
+
+            public void addw(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_000_00000_0111011, dst, src1, src2);
+    }
+
+            public void and(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_111_00000_0110011, dst, src1, src2);
+    }
+
+            public void andi(int dst, int src1, int src2) {
+                asmI(0b111_00000_0010011, dst, src1, src2);
+    }
+
+            public void auipc(int dst, int src1, int src2) {
+                asmU(0b0010111, dst, src1);
+    }
+
+            public void beq(int dst, int src1, int src2) {
+                asmB(0b000_00000_1100011, dst, src1, src2);
+    }
+
+            public void bge(int dst, int src1, int src2) {
+                asmB(0b101_00000_1100011, dst, src1, src2);
+    }
+
+            public void bgeu(int dst, int src1, int src2) {
+                asmB(0b111_00000_1100011, dst, src1, src2);
+    }
+
+            public void blt(int dst, int src1, int src2) {
+                asmB(0b100_00000_1100011, dst, src1, src2);
+    }
+
+            public void bltu(int dst, int src1, int src2) {
+                asmB(0b110_00000_1100011, dst, src1, src2);
+    }
+
+            public void bne(int dst, int src1, int src2) {
+                asmB(0b001_00000_1100011, dst, src1, src2);
+    }
+
+            public void csrrc(int dst, int src1, int src2) {
+                asmI(0b011_00000_1110011, dst, src1, src2);
+    }
+
+            public void csrrci(int dst, int src1, int src2) {
+                asmI(0b111_00000_1110011, dst, src1, src2);
+    }
+
+            public void csrrs(int dst, int src1, int src2) {
+                asmI(0b010_00000_1110011, dst, src1, src2);
+    }
+
+            public void csrrsi(int dst, int src1, int src2) {
+                asmI(0b110_00000_1110011, dst, src1, src2);
+    }
+
+            public void csrrw(int dst, int src1, int src2) {
+                asmI(0b001_00000_1110011, dst, src1, src2);
+    }
+
+            public void csrrwi(int dst, int src1, int src2) {
+                asmI(0b101_00000_1110011, dst, src1, src2);
+    }
+
+            public void div(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_100_00000_0110011, dst, src1, src2);
+    }
+
+            public void divu(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_101_00000_0110011, dst, src1, src2);
+    }
+
+            public void divuw(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_101_00000_0111011, dst, src1, src2);
+    }
+
+            public void divw(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_100_00000_0111011, dst, src1, src2);
+    }
+
+            public void ebreak(int dst, int src1, int src2) {
+                asmI(0b000_00000_1110011, 0, 0, 1);
+    }
+
+            public void ecall(int dst, int src1, int src2) {
+                asmI(0b000_00000_1110011, 0, 0, 0);
+    }
+
+            public void jal(int dst, int src1, int src2) {
+                asmJ(0b1101111, dst, src1);
+    }
+
+            public void jalr(int dst, int src1, int src2) {
+                asmI(0b000_00000_1100111, dst, src1, src2);
+    }
+
+            public void lb(int dst, int src1, int src2) {
+                asmI(0b000_00000_0000011, dst, src1, src2);
+    }
+
+            public void ld(int dst, int src1, int src2) {
+                asmI(0b011_00000_0000011, dst, src1, src2);
+    }
+
+            public void lbu(int dst, int src1, int src2) {
+                asmI(0b100_00000_0000011, dst, src1, src2);
+    }
+
+            public void lh(int dst, int src1, int src2) {
+                asmI(0b001_00000_0000011, dst, src1, src2);
+    }
+
+    public void li(int dst, int imm)
+    {
+        asmI(0b000_00000_0010011, dst, 0, imm);
+    }
+            public void lhu(int dst, int src1, int src2) {
+                asmI(0b101_00000_0000011, dst, src1, src2);
+    }
+
+            public void lui(int dst, int src1, int src2) {
+                asmU(0b0110111, dst, src1);
+    }
+
+            public void lw(int dst, int src1, int src2) {
+                asmI(0b010_00000_0000011, dst, src1, src2);
+    }
+
+            public void lwu(int dst, int src1, int src2) {
+                asmI(0b110_00000_0000011, dst, src1, src2);
+    }
+
+            public void mul(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_000_00000_0110011, dst, src1, src2);
+    }
+
+            public void mulh(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_001_00000_0110011, dst, src1, src2);
+    }
+
+            public void mulhsu(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_010_00000_0110011, dst, src1, src2);
+    }
+
+            public void mulhu(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_011_00000_0110011, dst, src1, src2);
+    }
+
+            public void mulw(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_000_00000_0111011, dst, src1, src2);
+    }
+
+            public void rem(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_110_00000_0110011, dst, src1, src2);
+    }
+
+            public void remu(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_111_00000_0110011, dst, src1, src2);
+    }
+
+            public void remuw(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_111_00000_0111011, dst, src1, src2);
+    }
+
+            public void remw(int dst, int src1, int src2) {
+                asmR(0b0000001_0000000000_110_00000_0111011, dst, src1, src2);
+    }
+
+            public void or(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_110_00000_0110011, dst, src1, src2);
+    }
+
+            public void ori(int dst, int src1, int src2) {
+                asmI(0b110_00000_0010011, dst, src1, src2);
+    }
+
+            public void sb(int dst, int src1, int src2) {
+                asmS(0b000_00000_0100011, dst, src1, src2);
+    }
+
+            public void sd(int dst, int src1, int src2) {
+                asmS(0b011_00000_0100011, dst, src1, src2);
+    }
+
+            public void sh(int dst, int src1, int src2) {
+                asmS(0b001_00000_0100011, dst, src1, src2);
+    }
+
+            public void slt(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_010_00000_0110011, dst, src1, src2);
+    }
+
+            public void slti(int dst, int src1, int src2) {
+                asmI(0b010_00000_0010011, dst, src1, src2);
+    }
+
+            public void sltiu(int dst, int src1, int src2) {
+                asmI(0b011_00000_0010011, dst, src1, src2);
+    }
+
+            public void sltu(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_011_00000_0110011, dst, src1, src2);
+    }
+
+            public void sll(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_001_00000_0110011, dst, src1, src2);
+    }
+
+            public void slli(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_001_00000_0010011, dst, src1, src2);
+    }
+
+            public void slliw(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_001_00000_0011011, dst, src1, src2);
+    }
+
+            public void sllw(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_001_00000_0111011, dst, src1, src2);
+    }
+
+            public void sra(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_101_00000_0110011, dst, src1, src2);
+    }
+
+            public void srai(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_101_00000_0010011, dst, src1, src2);
+    }
+
+            public void sraiw(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_101_00000_0011011, dst, src1, src2);
+    }
+
+            public void sraw(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_101_00000_0111011, dst, src1, src2);
+    }
+
+            public void srli(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_101_00000_0010011, dst, src1, src2);
+    }
+
+            public void srliw(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_101_00000_0011011, dst, src1, src2);
+    }
+
+            public void srl(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_101_00000_0110011, dst, src1, src2);
+    }
+
+            public void srlw(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_101_00000_0111011, dst, src1, src2);
+    }
+
+            public void sub(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_000_00000_0110011, dst, src1, src2);
+    }
+
+            public void subw(int dst, int src1, int src2) {
+                asmR(0b0100000_0000000000_000_00000_0111011, dst, src1, src2);
+    }
+
+            public void sw(int dst, int src1, int src2) {
+                asmS(0b010_00000_0100011, dst, src1, src2);
+    }
+
+            public void xor(int dst, int src1, int src2) {
+                asmR(0b0000000_0000000000_100_00000_0110011, dst, src1, src2);
+    }
+
+            public void xori(int dst, int src1, int src2) {
+                asmI(0b100_00000_0010011, dst, src1, src2);
+    }
+
+
+
+
     public void asm(Mnemonics operation, int dst, int src1, int src2, int src3 = 0, int rm = 0)
     {
         switch (operation)
@@ -482,7 +769,7 @@ public class Assembler
         var bit20 = bf20L1.ExtractUnsigned(uOffset);
         uInstr |= bits1_10 << 21;
         uInstr |= bit11 << 20;
-        uInstr |= bits12_19 << 12x;
+        uInstr |= bits12_19 << 12;
         uInstr |= bit20 << 31;
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;

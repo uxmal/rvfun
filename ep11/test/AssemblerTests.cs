@@ -221,6 +221,15 @@ public class AssemblerTests
         m => m.asm(Mnemonics.addi, op1, op2, -2));
     }
 
+    [Test]
+    public void RiscvAsm_li()
+    {
+        RunTest(
+        // imm[11:0] 00000 000 rd 0010011 addi
+        0b111111111110_00000_000_10001_0010011u,
+        m => m.li(op1, -2));
+    }
+
 
 
     [Test]
