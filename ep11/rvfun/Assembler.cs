@@ -20,7 +20,12 @@ public class Assembler
     {
         this.memory = memory;
         this.instrPtr = 0;
+        this.Symbols = new();
+        this.Errors = new();
     }
+
+    public Dictionary<string, Symbol> Symbols {get; }
+    public List<string> Errors {get;}
 
             public void add(int dst, int src1, int src2) {
                 asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2);
@@ -122,7 +127,7 @@ public class Assembler
                 asmI(0b000_00000_1110011, 0, 0, 0);
     }
 
-            public void jal(int dst, int src1, int src2) {
+            public void jal(int dst, int src1) {
                 asmJ(0b1101111, dst, src1);
     }
 
@@ -885,6 +890,23 @@ public class Assembler
         var bytes = Encoding.UTF8.GetBytes(str);
         memory.WriteBytes(instrPtr, bytes);
         instrPtr += (uint)bytes.Length;
+    }
+
+    public void label(string sLabel)
+    {
+        if (Symbols.ContainsKey(sLabel))
+        {
+            ReportError("error: label {sLabel} was redefined.");
+            return;
+        }
+        var sym = new Symbol(sLabel, instrPtr);
+        Symbols.Add(sLabel, sym);
+    }
+
+    private void ReportError(string errorMsg)
+    {
+        this.Errors.Add(errorMsg);
+        Console.Out.WriteLine(errorMsg);
     }
 }
 

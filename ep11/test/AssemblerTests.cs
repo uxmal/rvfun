@@ -10,6 +10,16 @@ public class AssemblerTests
     private const int op3 = 0b10101;
     private const int op4 = 0b10111;
 
+    private Assembler Assemble(Action<Assembler> asmClient)
+    {
+        var bytes = new byte[1024];
+        var memory = new Memory(bytes);
+        var m = new Assembler(memory);
+
+        asmClient(m);
+        return m;
+    }
+
     private void RunTest(uint uInstrExpected, Action<Assembler> testBuilder)
     {
         var bytes = new byte[1024];
@@ -230,7 +240,31 @@ public class AssemblerTests
         m => m.li(op1, -2));
     }
 
+    [Test]
+    public void RiscAsm_symbol()
+    {
+        var asm = Assemble(m =>
+        {
+            m.li(4, 9);
+            m.label("mylabel");
+            m.li(2, 10);
+        });
+        Assert.That(asm.Symbols["mylabel"].Address, Is.EqualTo(4u));
+    }
 
+        [Test]
+    public void RiscAsm_symbol_redefinition()
+    {
+        var asm = Assemble(m =>
+        {
+            m.li(4, 9);
+            m.label("mylabel");
+            m.li(2, 10);
+            m.label("mylabel");
+
+        });
+        Assert.That(asm.Errors.Count, Is.EqualTo(1));
+    }
 
     [Test]
     public void RiscvAsm_sltiu()
