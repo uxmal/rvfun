@@ -1,0 +1,81 @@
+namespace rvfun;
+
+public class Memory
+{
+    private readonly byte[] bytes;
+
+    public Memory(byte[] bytes)
+    {
+        this.bytes = bytes;
+    }
+
+    public byte ReadByte(uint address)
+    {
+        return bytes[address];
+    }
+
+    public void WriteByte(uint address, byte value)  
+    {
+        this.bytes[address] = value;
+    }
+
+    public uint ReadLeWord16(uint address)
+    {
+        var b0 = this.bytes[address];
+        var b1 = this.bytes[address + 1];
+        return b0 + 
+            (uint)(b1 * 256);
+    }
+
+    public uint ReadLeWord32(uint address)
+    {
+        var b0 = this.bytes[address];
+        var b1 = this.bytes[address + 1];
+        var b2 = this.bytes[address + 2];
+        var b3 = this.bytes[address + 3];
+        return b0 + 
+            (uint)(b1 * 256) + 
+            (uint)(b2 * 65536) +
+            (uint)(b3 * 256 * 65536);
+    }
+
+    public void WriteLeWord16(uint address, ushort value) => WriteLeWord16(address, (short)value);
+
+    public void WriteLeWord16(uint address, short value)
+    {
+        var b1 = (byte)(value >> 8);
+        var b0 = (byte) value;
+        this.bytes[address] = b0;
+        this.bytes[address+ 1] = b1;
+    }
+
+
+    public void WriteLeWord32(uint address, uint value) => WriteLeWord32(address, (int)value);
+
+    public void WriteLeWord32(uint address, int value)
+    {
+        var b3 = (byte) (value >> 24);
+        var b2 = (byte)(value >> 16);
+        var b1 = (byte)(value >> 8);
+        var b0 = (byte) value;
+        this.bytes[address] = b0;
+        this.bytes[address+ 1] = b1;
+        this.bytes[address + 2] = b2;
+        this.bytes[address + 3] = b3;
+    }
+
+    public bool IsValidAddress(uint iptr)
+    {
+        return 0 <= iptr && iptr < this.bytes.Length;
+    }
+
+    public void WriteBytes(uint address, byte[] bytes)
+    {
+        Array.Copy(bytes, 0, this.bytes, address, bytes.Length);
+    }
+
+    public Span<byte> GetSpan(int address, int length)
+    {
+        return this.bytes.AsSpan(address, length);
+    }
+}
