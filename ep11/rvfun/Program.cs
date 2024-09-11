@@ -10,14 +10,14 @@ var m = new Assembler(mem);
 
 m.li(11, 10);
 m.li(10, 1);
-m.jal(0, 12);    // head of loop
+m.jal(0, "loop_head");    // head of loop
 
 m.label("loop_body");
 m.mul(10, 10, 11);
 m.addi(11, 11, -1);
 
 m.label("loop_head");
-m.blt(0, 11,  -8);  // loop body
+m.blt(0, 11, "loop_body");  // loop body
 
 
 /*

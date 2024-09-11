@@ -22,10 +22,12 @@ public class Assembler
         this.instrPtr = 0;
         this.Symbols = new();
         this.Errors = new();
+        this.Relocations = new();
     }
 
     public Dictionary<string, Symbol> Symbols {get; }
     public List<string> Errors {get;}
+    public List<Relocation> Relocations {get;}
 
             public void add(int dst, int src1, int src2) {
                 asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2);
@@ -69,6 +71,11 @@ public class Assembler
 
             public void blt(int dst, int src1, int src2) {
                 asmB(0b100_00000_1100011, dst, src1, src2);
+    }
+
+              public void blt(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b100_00000_1100011, dst, src1, 0);
     }
 
             public void bltu(int dst, int src1, int src2) {
@@ -131,7 +138,13 @@ public class Assembler
                 asmJ(0b1101111, dst, src1);
     }
 
-            public void jalr(int dst, int src1, int src2) {
+            public void jal(int dst, string target) {
+                EmitRelocation(instrPtr, RelocationType.J_PcRelative, target);
+                asmJ(0b1101111, dst, 0);
+            }
+
+
+    public void jalr(int dst, int src1, int src2) {
                 asmI(0b000_00000_1100111, dst, src1, src2);
     }
 
@@ -767,17 +780,24 @@ public class Assembler
     {
         uint uInstr = opcode;
         uInstr |= (uint)(rd & 0b11111) << 7;
+        uInstr |= EncodeJdisplacement(offset);
+        memory.WriteLeWord32(instrPtr, uInstr);
+        instrPtr += 4;
+    }
+
+    private static uint EncodeJdisplacement(int offset)
+    {
         uint uOffset = (uint)offset;
+        uint encodedDisplacement = 0;
         var bits1_10 = bf1L10.ExtractUnsigned(uOffset);
         var bit11 = bf11L1.ExtractUnsigned(uOffset);
         var bits12_19 = bf12L8.ExtractUnsigned(uOffset);
         var bit20 = bf20L1.ExtractUnsigned(uOffset);
-        uInstr |= bits1_10 << 21;
-        uInstr |= bit11 << 20;
-        uInstr |= bits12_19 << 12;
-        uInstr |= bit20 << 31;
-        memory.WriteLeWord32(instrPtr, uInstr);
-        instrPtr += 4;
+        encodedDisplacement |= bits1_10 << 21;
+        encodedDisplacement |= bit11 << 20;
+        encodedDisplacement |= bits12_19 << 12;
+        encodedDisplacement |= bit20 << 31;
+        return encodedDisplacement;
     }
 
     private void asmB(uint opcode, int src1, int src2, int offset)
@@ -903,10 +923,46 @@ public class Assembler
         Symbols.Add(sLabel, sym);
     }
 
+    
+    private void EmitRelocation(uint instrPtr, RelocationType rtype, string symbolName)
+    {
+        var rel = new Relocation(instrPtr, rtype, symbolName);
+        this.Relocations.Add(rel);
+    }
+
     private void ReportError(string errorMsg)
     {
         this.Errors.Add(errorMsg);
         Console.Out.WriteLine(errorMsg);
+    }
+
+    public void Relocate()
+    {
+        foreach (var rel in this.Relocations)
+        {
+            Relocate(rel);
+        }
+    }
+
+    private void Relocate(Relocation rel)
+    {
+        if (!Symbols.TryGetValue(rel.SymbolName, out var symbol))
+        {
+            ReportError($"Unknown symbol {rel.SymbolName}");
+            return;
+        }
+        var uInstr = memory.ReadLeWord32(rel.Address);
+// 000000000000000000000 <rdst> 1010101 
+        switch (rel.Rtype)
+        {
+            case RelocationType.J_PcRelative:
+                int displacement = (int) symbol.Address - (int) rel.Address;
+                uInstr |= EncodeJdisplacement(displacement);
+                memory.WriteLeWord32(rel.Address, uInstr);
+                break;
+            default:
+                throw new NotImplementedException($"Unimplemented relocation type {rel.Rtype}.");
+        }
     }
 }
 

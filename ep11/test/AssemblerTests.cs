@@ -10,10 +10,22 @@ public class AssemblerTests
     private const int op3 = 0b10101;
     private const int op4 = 0b10111;
 
-    private Assembler Assemble(Action<Assembler> asmClient)
+    private Memory memory = default!;
+
+    [SetUp]
+    public void Setup()
+    {
+        Given_Memory();
+    }
+
+    private void Given_Memory()
     {
         var bytes = new byte[1024];
-        var memory = new Memory(bytes);
+        this.memory = new Memory(bytes);
+    }
+
+    private Assembler Assemble(Action<Assembler> asmClient)
+    {
         var m = new Assembler(memory);
 
         asmClient(m);
@@ -264,6 +276,44 @@ public class AssemblerTests
 
         });
         Assert.That(asm.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void RiscAsm_reloc_added()
+    {
+        var asm = Assemble(m =>
+        {
+            m.blt(1, 2, "mylabel");
+        });
+        Assert.That(asm.Relocations.Count, Is.EqualTo(1));
+        var rel = asm.Relocations[0];
+        Assert.That(rel.SymbolName, Is.EqualTo("mylabel"));
+        Assert.That(rel.Rtype, Is.EqualTo(RelocationType.B_PcRelative));
+    }
+
+    [Test]
+    public void RiscAsm_reloc_relocate()
+    {
+        var asm2 = Assemble(m => 
+        {
+            m.li(4, 4);
+            m.jal(0, -4);
+        });
+        var uInstrExpected = memory.ReadLeWord32(4);
+
+        Given_Memory();
+
+        var asm = Assemble(m =>
+        {
+            m.label("mylabel");
+            m.li(4, 4);
+            m.jal(0, "mylabel");
+
+            m.Relocate();
+        });
+        var uInstrActual = memory.ReadLeWord32(4);
+
+        Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
     }
 
     [Test]
