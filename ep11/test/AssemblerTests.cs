@@ -991,6 +991,8 @@ public void RiscvAsm_amomaxu_d()
 */
 
 #endregion
+#endif
+
 
 #region RV32F
 //rv32f standard/extension/
@@ -1000,7 +1002,7 @@ public void RiscvAsm_flw()
     RunTest(
     // imm[11:0] rs1 010 rd 0000111 flw
     0b111111111110_10011_010_10001_0000111u,
-    m => m.asm(Mnemonics.flw, op1, op2, op3));
+    m => m.asm(Mnemonics.flw, op1, op2, -2));
 }
 
 
@@ -1009,8 +1011,8 @@ public void RiscvAsm_fsw()
 {
     RunTest(
     // imm[11:5] rs2 rs1 010 imm[4:0] 0100111 fsw
-    0b1010101_10101_10011_010_01010_0100111u,
-    m => m.asm(Mnemonics.fsw, op1, op2, op3));
+    0b1010101_10001_10011_010_01010_0100111u,
+    m => m.asm(Mnemonics.fsw, op1, op2, -1366));
 }
 
 
@@ -1020,7 +1022,7 @@ public void RiscvAsm_fmadd_s()
     RunTest(
     // rs3 00 rs2 rs1 rm rd 1000011 fmadd.s
     0b10111_00_10101_10011_010_10001_1000011u,
-    m => m.asm(Mnemonics.fmadd_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fmadd_s, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1030,7 +1032,7 @@ public void RiscvAsm_fmsub_s()
     RunTest(
     // rs3 00 rs2 rs1 rm rd 1000111 fmsub.s
     0b10111_00_10101_10011_010_10001_1000111u,
-    m => m.asm(Mnemonics.fmsub_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fmsub_s, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1040,7 +1042,7 @@ public void RiscvAsm_fnmsub_s()
     RunTest(
     // rs3 00 rs2 rs1 rm rd 1001011 fnmsub.s
     0b10111_00_10101_10011_010_10001_1001011u,
-    m => m.asm(Mnemonics.fnmsub_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmsub_s, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1050,7 +1052,7 @@ public void RiscvAsm_fnmadd_s()
     RunTest(
     // rs3 00 rs2 rs1 rm rd 1001111 fnmadd.s
     0b10111_00_10101_10011_010_10001_1001111u,
-    m => m.asm(Mnemonics.fnmadd_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmadd_s, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1060,7 +1062,7 @@ public void RiscvAsm_fadd_s()
     RunTest(
     // 0000000 rs2 rs1 rm rd 1010011 fadd.s
     0b0000000_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fadd_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fadd_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1070,7 +1072,7 @@ public void RiscvAsm_fsub_s()
     RunTest(
     // 0000100 rs2 rs1 rm rd 1010011 fsub.s
     0b0000100_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsub_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fsub_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1080,7 +1082,7 @@ public void RiscvAsm_fmul_s()
     RunTest(
     // 0001000 rs2 rs1 rm rd 1010011 fmul.s
     0b0001000_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fmul_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fmul_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1090,7 +1092,7 @@ public void RiscvAsm_fdiv_s()
     RunTest(
     // 0001100 rs2 rs1 rm rd 1010011 fdiv.s
     0b0001100_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fdiv_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fdiv_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1100,7 +1102,7 @@ public void RiscvAsm_fsqrt_s()
     RunTest(
     // 0101100 00000 rs1 rm rd 1010011 fsqrt.s
     0b0101100_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsqrt_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fsqrt_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1160,7 +1162,7 @@ public void RiscvAsm_fcvt_w_s()
     RunTest(
     // 1100000 00000 rs1 rm rd 1010011 fcvt.w.s
     0b1100000_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_w_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_w_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1170,7 +1172,7 @@ public void RiscvAsm_fcvt_wu_s()
     RunTest(
     // 1100000 00001 rs1 rm rd 1010011 fcvt.wu.s
     0b1100000_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_wu_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_wu_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1230,7 +1232,7 @@ public void RiscvAsm_fcvt_s_w()
     RunTest(
     // 1101000 00000 rs1 rm rd 1010011 fcvt.s.w
     0b1101000_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_w, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_w, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1240,7 +1242,7 @@ public void RiscvAsm_fcvt_s_wu()
     RunTest(
     // 1101000 00001 rs1 rm rd 1010011 fcvt.s.wu
     0b1101000_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_wu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_wu, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1261,7 +1263,7 @@ public void RiscvAsm_fcvt_l_s()
     RunTest(
     // 1100000 00010 rs1 rm rd 1010011 fcvt.l.s
     0b1100000_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_l_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_l_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1271,7 +1273,7 @@ public void RiscvAsm_fcvt_lu_s()
     RunTest(
     // 1100000 00011 rs1 rm rd 1010011 fcvt.lu.s
     0b1100000_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_lu_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_lu_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1281,7 +1283,7 @@ public void RiscvAsm_fcvt_s_l()
     RunTest(
     // 1101000 00010 rs1 rm rd 1010011 fcvt.s.l
     0b1101000_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_l, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_l, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1291,7 +1293,7 @@ public void RiscvAsm_fcvt_s_lu()
     RunTest(
     // 1101000 00011 rs1 rm rd 1010011 fcvt.s.lu
     0b1101000_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_lu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_lu, op1, op2, op3, rm:0b010));
 }
 
 #endregion
@@ -1306,7 +1308,7 @@ public void RiscvAsm_fld()
     RunTest(
     // imm[11:0] rs1 011 rd 0000111 fld
     0b111111111110_10011_011_10001_0000111u,
-    m => m.asm(Mnemonics.fld, op1, op2, op3));
+    m => m.asm(Mnemonics.fld, op1, op2, -2));
 }
 
 
@@ -1315,8 +1317,8 @@ public void RiscvAsm_fsd()
 {
     RunTest(
     // imm[11:5] rs2 rs1 011 imm[4:0] 0100111 fsd
-    0b1010101_10101_10011_011_01010_0100111u,
-    m => m.asm(Mnemonics.fsd, op1, op2, op3));
+    0b1010101_10001_10011_011_01010_0100111u,
+    m => m.asm(Mnemonics.fsd, op1, op2, -1366));
 }
 
 
@@ -1326,7 +1328,7 @@ public void RiscvAsm_fmadd_d()
     RunTest(
     // rs3 01 rs2 rs1 rm rd 1000011 fmadd.d
     0b10111_01_10101_10011_010_10001_1000011u,
-    m => m.asm(Mnemonics.fmadd_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fmadd_d, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1336,7 +1338,7 @@ public void RiscvAsm_fmsub_d()
     RunTest(
     // rs3 01 rs2 rs1 rm rd 1000111 fmsub.d
     0b10111_01_10101_10011_010_10001_1000111u,
-    m => m.asm(Mnemonics.fmsub_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fmsub_d, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1346,7 +1348,7 @@ public void RiscvAsm_fnmsub_d()
     RunTest(
     // rs3 01 rs2 rs1 rm rd 1001011 fnmsub.d
     0b10111_01_10101_10011_010_10001_1001011u,
-    m => m.asm(Mnemonics.fnmsub_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmsub_d, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1356,7 +1358,7 @@ public void RiscvAsm_fnmadd_d()
     RunTest(
     // rs3 01 rs2 rs1 rm rd 1001111 fnmadd.d
     0b10111_01_10101_10011_010_10001_1001111u,
-    m => m.asm(Mnemonics.fnmadd_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmadd_d, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1366,7 +1368,7 @@ public void RiscvAsm_fadd_d()
     RunTest(
     // 0000001 rs2 rs1 rm rd 1010011 fadd.d
     0b0000001_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fadd_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fadd_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1376,7 +1378,7 @@ public void RiscvAsm_fsub_d()
     RunTest(
     // 0000101 rs2 rs1 rm rd 1010011 fsub.d
     0b0000101_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsub_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fsub_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1386,7 +1388,7 @@ public void RiscvAsm_fmul_d()
     RunTest(
     // 0001001 rs2 rs1 rm rd 1010011 fmul.d
     0b0001001_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fmul_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fmul_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1396,7 +1398,7 @@ public void RiscvAsm_fdiv_d()
     RunTest(
     // 0001101 rs2 rs1 rm rd 1010011 fdiv.d
     0b0001101_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fdiv_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fdiv_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1406,7 +1408,7 @@ public void RiscvAsm_fsqrt_d()
     RunTest(
     // 0101101 00000 rs1 rm rd 1010011 fsqrt.d
     0b0101101_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsqrt_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fsqrt_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1466,7 +1468,7 @@ public void RiscvAsm_fcvt_s_d()
     RunTest(
     // 0100000 00001 rs1 rm rd 1010011 fcvt.s.d
     0b0100000_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1476,7 +1478,7 @@ public void RiscvAsm_fcvt_d_s()
     RunTest(
     // 0100001 00000 rs1 rm rd 1010011 fcvt.d.s
     0b0100001_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_s, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1526,7 +1528,7 @@ public void RiscvAsm_fcvt_w_d()
     RunTest(
     // 1100001 00000 rs1 rm rd 1010011 fcvt.w.d
     0b1100001_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_w_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_w_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1536,7 +1538,7 @@ public void RiscvAsm_fcvt_wu_d()
     RunTest(
     // 1100001 00001 rs1 rm rd 1010011 fcvt.wu.d
     0b1100001_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_wu_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_wu_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1546,7 +1548,7 @@ public void RiscvAsm_fcvt_d_w()
     RunTest(
     // 1101001 00000 rs1 rm rd 1010011 fcvt.d.w
     0b1101001_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_w, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_w, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1556,7 +1558,7 @@ public void RiscvAsm_fcvt_d_wu()
     RunTest(
     // 1101001 00001 rs1 rm rd 1010011 fcvt.d.wu
     0b1101001_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_wu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_wu, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1568,7 +1570,7 @@ public void RiscvAsm_fcvt_l_d()
     RunTest(
     // 1100001 00010 rs1 rm rd 1010011 fcvt.l.d
     0b1100001_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_l_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_l_d, op1, op2, 0,rm:0b010));
 }
 
 
@@ -1578,7 +1580,7 @@ public void RiscvAsm_fcvt_lu_d()
     RunTest(
     // 1100001 00011 rs1 rm rd 1010011 fcvt.lu.d
     0b1100001_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_lu_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_lu_d, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1598,7 +1600,7 @@ public void RiscvAsm_fcvt_d_l()
     RunTest(
     // 1101001 00010 rs1 rm rd 1010011 fcvt.d.l
     0b1101001_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_l, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_l, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1608,7 +1610,7 @@ public void RiscvAsm_fcvt_d_lu()
     RunTest(
     // 1101001 00011 rs1 rm rd 1010011 fcvt.d.lu
     0b1101001_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_lu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_lu, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1632,7 +1634,7 @@ public void RiscvAsm_flq()
     RunTest(
     // imm[11:0] rs1 100 rd 0000111 flq
     0b111111111110_10011_100_10001_0000111u,
-    m => m.asm(Mnemonics.flq, op1, op2, op3));
+    m => m.asm(Mnemonics.flq, op1, op2, -2));
 }
 
 
@@ -1641,8 +1643,8 @@ public void RiscvAsm_fsq()
 {
     RunTest(
     // imm[11:5] rs2 rs1 100 imm[4:0] 0100111 fsq
-    0b1010101_10101_10011_100_01010_0100111u,
-    m => m.asm(Mnemonics.fsq, op1, op2, op3));
+    0b1010101_10001_10011_100_01010_0100111u,
+    m => m.asm(Mnemonics.fsq, op1, op2, -1366));
 }
 
 
@@ -1652,7 +1654,7 @@ public void RiscvAsm_fmadd_q()
     RunTest(
     // rs3 11 rs2 rs1 rm rd 1000011 fmadd.q
     0b10111_11_10101_10011_010_10001_1000011u,
-    m => m.asm(Mnemonics.fmadd_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fmadd_q, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1662,7 +1664,7 @@ public void RiscvAsm_fmsub_q()
     RunTest(
     // rs3 11 rs2 rs1 rm rd 1000111 fmsub.q
     0b10111_11_10101_10011_010_10001_1000111u,
-    m => m.asm(Mnemonics.fmsub_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fmsub_q, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1672,7 +1674,7 @@ public void RiscvAsm_fnmsub_q()
     RunTest(
     // rs3 11 rs2 rs1 rm rd 1001011 fnmsub.q
     0b10111_11_10101_10011_010_10001_1001011u,
-    m => m.asm(Mnemonics.fnmsub_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmsub_q, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1682,7 +1684,7 @@ public void RiscvAsm_fnmadd_q()
     RunTest(
     // rs3 11 rs2 rs1 rm rd 1001111 fnmadd.q
     0b10111_11_10101_10011_010_10001_1001111u,
-    m => m.asm(Mnemonics.fnmadd_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmadd_q, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1692,7 +1694,7 @@ public void RiscvAsm_fadd_q()
     RunTest(
     // 0000011 rs2 rs1 rm rd 1010011 fadd.q
     0b0000011_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fadd_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fadd_q, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1702,7 +1704,7 @@ public void RiscvAsm_fsub_q()
     RunTest(
     // 0000111 rs2 rs1 rm rd 1010011 fsub.q
     0b0000111_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsub_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fsub_q, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1712,7 +1714,7 @@ public void RiscvAsm_fmul_q()
     RunTest(
     // 0001011 rs2 rs1 rm rd 1010011 fmul.q
     0b0001011_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fmul_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fmul_q, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1722,7 +1724,7 @@ public void RiscvAsm_fdiv_q()
     RunTest(
     // 0001111 rs2 rs1 rm rd 1010011 fdiv.q
     0b0001111_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fdiv_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fdiv_q, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1732,7 +1734,7 @@ public void RiscvAsm_fsqrt_q()
     RunTest(
     // 0101111 00000 rs1 rm rd 1010011 fsqrt.q
     0b0101111_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsqrt_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fsqrt_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1792,7 +1794,7 @@ public void RiscvAsm_fcvt_s_q()
     RunTest(
     // 0100000 00011 rs1 rm rd 1010011 fcvt.s.q
     0b0100000_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1802,7 +1804,7 @@ public void RiscvAsm_fcvt_q_s()
     RunTest(
     // 0100011 00000 rs1 rm rd 1010011 fcvt.q.s
     0b0100011_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_s, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1812,7 +1814,7 @@ public void RiscvAsm_fcvt_d_q()
     RunTest(
     // 0100001 00011 rs1 rm rd 1010011 fcvt.d.q
     0b0100001_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_q, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1822,7 +1824,7 @@ public void RiscvAsm_fcvt_q_d()
     RunTest(
     // 0100011 00001 rs1 rm rd 1010011 fcvt.q.d
     0b0100011_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_d, op1, op2, op3, rm:0b010));
 }
 
 
@@ -1872,7 +1874,7 @@ public void RiscvAsm_fcvt_w_q()
     RunTest(
     // 1100011 00000 rs1 rm rd 1010011 fcvt.w.q
     0b1100011_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_w_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_w_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1882,7 +1884,7 @@ public void RiscvAsm_fcvt_wu_q()
     RunTest(
     // 1100011 00001 rs1 rm rd 1010011 fcvt.wu.q
     0b1100011_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_wu_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_wu_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1892,7 +1894,7 @@ public void RiscvAsm_fcvt_q_w()
     RunTest(
     // 1101011 00000 rs1 rm rd 1010011 fcvt.q.w
     0b1101011_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_w, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_w, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1902,7 +1904,7 @@ public void RiscvAsm_fcvt_q_wu()
     RunTest(
     // 1101011 00001 rs1 rm rd 1010011 fcvt.q.wu
     0b1101011_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_wu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_wu, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1914,7 +1916,7 @@ public void RiscvAsm_fcvt_l_q()
     RunTest(
     // 1100011 00010 rs1 rm rd 1010011 fcvt.l.q
     0b1100011_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_l_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_l_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1924,7 +1926,7 @@ public void RiscvAsm_fcvt_lu_q()
     RunTest(
     // 1100011 00011 rs1 rm rd 1010011 fcvt.lu.q
     0b1100011_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_lu_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_lu_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1934,7 +1936,7 @@ public void RiscvAsm_fcvt_q_l()
     RunTest(
     // 1101011 00010 rs1 rm rd 1010011 fcvt.q.l
     0b1101011_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_l, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_l, op1, op2, 0, rm:0b010));
 }
 
 
@@ -1944,7 +1946,7 @@ public void RiscvAsm_fcvt_q_lu()
     RunTest(
     // 1101011 00011 rs1 rm rd 1010011 fcvt.q.lu
     0b1101011_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_lu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_lu, op1, op2, 0, rm:0b010));
 }
 
 #endregion
@@ -1958,7 +1960,7 @@ public void RiscvAsm_flh()
     RunTest(
     // imm[11:0] rs1 001 rd 0000111 flh
     0b111111111110_10011_001_10001_0000111u,
-    m => m.asm(Mnemonics.flh, op1, op2, op3));
+    m => m.asm(Mnemonics.flh, op1, op2, -2));
 }
 
 
@@ -1967,8 +1969,8 @@ public void RiscvAsm_fsh()
 {
     RunTest(
     // imm[11:5] rs2 rs1 001 imm[4:0] 0100111 fsh
-    0b1010101_10101_10011_001_01010_0100111u,
-    m => m.asm(Mnemonics.fsh, op1, op2, op3));
+    0b1010101_10001_10011_001_01010_0100111u,
+    m => m.asm(Mnemonics.fsh, op1, op2, -1366));
 }
 
 
@@ -1978,7 +1980,7 @@ public void RiscvAsm_fmadd_h()
     RunTest(
     // rs3 10 rs2 rs1 rm rd 1000011 fmadd.h
     0b10111_10_10101_10011_010_10001_1000011u,
-    m => m.asm(Mnemonics.fmadd_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fmadd_h, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1988,7 +1990,7 @@ public void RiscvAsm_fmsub_h()
     RunTest(
     // rs3 10 rs2 rs1 rm rd 1000111 fmsub.h
     0b10111_10_10101_10011_010_10001_1000111u,
-    m => m.asm(Mnemonics.fmsub_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fmsub_h, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -1998,7 +2000,7 @@ public void RiscvAsm_fnmsub_h()
     RunTest(
     // rs3 10 rs2 rs1 rm rd 1001011 fnmsub.h
     0b10111_10_10101_10011_010_10001_1001011u,
-    m => m.asm(Mnemonics.fnmsub_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmsub_h, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -2008,7 +2010,7 @@ public void RiscvAsm_fnmadd_h()
     RunTest(
     // rs3 10 rs2 rs1 rm rd 1001111 fnmadd.h
     0b10111_10_10101_10011_010_10001_1001111u,
-    m => m.asm(Mnemonics.fnmadd_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fnmadd_h, op1, op2, op3, op4, rm:0b010));
 }
 
 
@@ -2018,7 +2020,7 @@ public void RiscvAsm_fadd_h()
     RunTest(
     // 0000010 rs2 rs1 rm rd 1010011 fadd.h
     0b0000010_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fadd_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fadd_h, op1, op2, op3, rm:0b010));
 }
 
 
@@ -2028,7 +2030,7 @@ public void RiscvAsm_fsub_h()
     RunTest(
     // 0000110 rs2 rs1 rm rd 1010011 fsub.h
     0b0000110_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsub_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fsub_h, op1, op2, op3, rm:0b010));
 }
 
 
@@ -2038,7 +2040,7 @@ public void RiscvAsm_fmul_h()
     RunTest(
     // 0001010 rs2 rs1 rm rd 1010011 fmul.h
     0b0001010_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fmul_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fmul_h, op1, op2, op3, rm:0b010));
 }
 
 
@@ -2048,7 +2050,7 @@ public void RiscvAsm_fdiv_h()
     RunTest(
     // 0001110 rs2 rs1 rm rd 1010011 fdiv.h
     0b0001110_10101_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fdiv_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fdiv_h, op1, op2, op3, rm:0b010));
 }
 
 
@@ -2058,7 +2060,7 @@ public void RiscvAsm_fsqrt_h()
     RunTest(
     // 0101110 00000 rs1 rm rd 1010011 fsqrt.h
     0b0101110_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fsqrt_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fsqrt_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2118,7 +2120,7 @@ public void RiscvAsm_fcvt_s_h()
     RunTest(
     // 0100000 00010 rs1 rm rd 1010011 fcvt.s.h
     0b0100000_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_s_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_s_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2128,7 +2130,7 @@ public void RiscvAsm_fcvt_h_s()
     RunTest(
     // 0100010 00000 rs1 rm rd 1010011 fcvt.h.s
     0b0100010_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_s, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_s, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2138,7 +2140,7 @@ public void RiscvAsm_fcvt_d_h()
     RunTest(
     // 0100001 00010 rs1 rm rd 1010011 fcvt.d.h
     0b0100001_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_d_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_d_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2148,7 +2150,7 @@ public void RiscvAsm_fcvt_h_d()
     RunTest(
     // 0100010 00001 rs1 rm rd 1010011 fcvt.h.d
     0b0100010_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_d, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_d, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2158,7 +2160,7 @@ public void RiscvAsm_fcvt_q_h()
     RunTest(
     // 0100011 00010 rs1 rm rd 1010011 fcvt.q.h
     0b0100011_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_q_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_q_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2168,7 +2170,7 @@ public void RiscvAsm_fcvt_h_q()
     RunTest(
     // 0100010 00011 rs1 rm rd 1010011 fcvt.h.q
     0b0100010_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_q, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_q, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2218,7 +2220,7 @@ public void RiscvAsm_fcvt_w_h()
     RunTest(
     // 1100010 00000 rs1 rm rd 1010011 fcvt.w.h
     0b1100010_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_w_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_w_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2228,7 +2230,7 @@ public void RiscvAsm_fcvt_wu_h()
     RunTest(
     // 1100010 00001 rs1 rm rd 1010011 fcvt.wu.h
     0b1100010_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_wu_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_wu_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2248,7 +2250,7 @@ public void RiscvAsm_fcvt_h_w()
     RunTest(
     // 1101010 00000 rs1 rm rd 1010011 fcvt.h.w
     0b1101010_00000_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_w, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_w, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2258,7 +2260,7 @@ public void RiscvAsm_fcvt_h_wu()
     RunTest(
     // 1101010 00001 rs1 rm rd 1010011 fcvt.h.wu
     0b1101010_00001_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_wu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_wu, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2280,7 +2282,7 @@ public void RiscvAsm_fcvt_l_h()
     RunTest(
     // 1100010 00010 rs1 rm rd 1010011 fcvt.l.h
     0b1100010_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_l_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_l_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2292,7 +2294,7 @@ public void RiscvAsm_fcvt_lu_h()
     RunTest(
     // 1100010 00011 rs1 rm rd 1010011 fcvt.lu.h
     0b1100010_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_lu_h, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_lu_h, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2302,7 +2304,7 @@ public void RiscvAsm_fcvt_h_l()
     RunTest(
     // 1101010 00010 rs1 rm rd 1010011 fcvt.h.l
     0b1101010_00010_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_l, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_l, op1, op2, 0, rm:0b010));
 }
 
 
@@ -2312,7 +2314,7 @@ public void RiscvAsm_fcvt_h_lu()
     RunTest(
     // 1101010 00011 rs1 rm rd 1010011 fcvt.h.lu
     0b1101010_00011_10011_010_10001_1010011u,
-    m => m.asm(Mnemonics.fcvt_h_lu, op1, op2, op3));
+    m => m.asm(Mnemonics.fcvt_h_lu, op1, op2, 0, rm:0b010));
 }
 
 #endregion
@@ -2340,5 +2342,4 @@ public void RiscvAsm_wrs_sto()
 
 #endregion
 
-#endif
 }
