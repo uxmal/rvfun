@@ -73,11 +73,6 @@ public class Assembler
                 asmB(0b100_00000_1100011, dst, src1, src2);
     }
 
-              public void blt(int dst, int src1, string target) {
-                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
-                asmB(0b100_00000_1100011, dst, src1, 0);
-    }
-
             public void bltu(int dst, int src1, int src2) {
                 asmB(0b110_00000_1100011, dst, src1, src2);
     }
@@ -85,6 +80,39 @@ public class Assembler
             public void bne(int dst, int src1, int src2) {
                 asmB(0b001_00000_1100011, dst, src1, src2);
     }
+
+        public void beq(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b000_00000_1100011, dst, src1, 0);
+    }
+
+            public void bge(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b101_00000_1100011, dst, src1, 0);
+    }
+
+            public void bgeu(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b111_00000_1100011, dst, src1, 0);
+    }
+
+              public void blt(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b100_00000_1100011, dst, src1, 0);
+    }
+
+
+    
+            public void bltu(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b110_00000_1100011, dst, src1, 0);
+    }
+
+            public void bne(int dst, int src1, string target) {
+                EmitRelocation(instrPtr, RelocationType.B_PcRelative, target);
+                asmB(0b001_00000_1100011, dst, src1, 0);
+    }
+
 
             public void csrrc(int dst, int src1, int src2) {
                 asmI(0b011_00000_1110011, dst, src1, src2);
@@ -138,11 +166,16 @@ public class Assembler
                 asmJ(0b1101111, dst, src1);
     }
 
+            public void j(string target) {
+                EmitRelocation(instrPtr, RelocationType.J_PcRelative, target);
+                asmJ(0b1101111, 0, 0);
+            }
+
+
             public void jal(int dst, string target) {
                 EmitRelocation(instrPtr, RelocationType.J_PcRelative, target);
                 asmJ(0b1101111, dst, 0);
             }
-
 
     public void jalr(int dst, int src1, int src2) {
                 asmI(0b000_00000_1100111, dst, src1, src2);
@@ -805,17 +838,24 @@ public class Assembler
         uint uInstr = opcode;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
+        uInstr |= EncodeBdisplacement(offset);
+        memory.WriteLeWord32(instrPtr, uInstr);
+        instrPtr += 4;
+    }
+
+    private static uint EncodeBdisplacement(int offset)
+    {
         uint uOffset = (uint)offset;
+        uint encodedDisplacement = 0;
         var bits1_4 = bf1L4.ExtractUnsigned(uOffset);
         var bits5_10 = bf5L6.ExtractUnsigned(uOffset);
         var bit11 = bf11L1.ExtractUnsigned(uOffset);
         var bit12 = bf12L1.ExtractUnsigned(uOffset);
-        uInstr |= bits1_4 << 8;
-        uInstr |= bits5_10 << 25;
-        uInstr |= bit11 << 7;
-        uInstr |= bit12 << 31;
-        memory.WriteLeWord32(instrPtr, uInstr);
-        instrPtr += 4;
+        encodedDisplacement |= bits1_4 << 8;
+        encodedDisplacement |= bits5_10 << 25;
+        encodedDisplacement |= bit11 << 7;
+        encodedDisplacement |= bit12 << 31;
+        return encodedDisplacement;
     }
 
     private void asmS(uint opcode, int src2, int baseReg, int offset)
@@ -912,6 +952,19 @@ public class Assembler
         instrPtr += (uint)bytes.Length;
     }
 
+    public void dw(int n)
+    {
+        memory.WriteLeWord32(instrPtr, n);
+        instrPtr += 4;
+    }
+
+    public void dw(string label)
+    {
+        EmitRelocation(instrPtr, RelocationType.W32_Absolute, label);
+        memory.WriteLeWord32(instrPtr, 0);
+        instrPtr += 4;
+    }
+
     public void label(string sLabel)
     {
         if (Symbols.ContainsKey(sLabel))
@@ -952,13 +1005,19 @@ public class Assembler
             return;
         }
         var uInstr = memory.ReadLeWord32(rel.Address);
-// 000000000000000000000 <rdst> 1010101 
+        int displacement = (int) symbol.Address - (int) rel.Address;
         switch (rel.Rtype)
         {
             case RelocationType.J_PcRelative:
-                int displacement = (int) symbol.Address - (int) rel.Address;
                 uInstr |= EncodeJdisplacement(displacement);
                 memory.WriteLeWord32(rel.Address, uInstr);
+                break;
+            case RelocationType.B_PcRelative:
+                uInstr |= EncodeBdisplacement(displacement);
+                memory.WriteLeWord32(rel.Address, uInstr);
+                break;
+            case RelocationType.W32_Absolute:
+                memory.WriteLeWord32(rel.Address, symbol.Address);
                 break;
             default:
                 throw new NotImplementedException($"Unimplemented relocation type {rel.Rtype}.");

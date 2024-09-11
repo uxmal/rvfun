@@ -19,5 +19,6 @@ public enum RelocationType{
     None,
 
     J_PcRelative,
-    B_PcRelative
+    B_PcRelative,
+    W32_Absolute
 }

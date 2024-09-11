@@ -316,6 +316,31 @@ public class AssemblerTests
         Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
     }
 
+        [Test]
+    public void RiscAsm_reloc_relocate_br()
+    {
+        var asm2 = Assemble(m => 
+        {
+            m.li(4, 4);
+            m.blt(3, 11, -4);
+        });
+        var uInstrExpected = memory.ReadLeWord32(4);
+
+        Given_Memory();
+
+        var asm = Assemble(m =>
+        {
+            m.label("mylabel");
+            m.li(4, 4);
+            m.blt(3, 11, "mylabel");
+
+            m.Relocate();
+        });
+        var uInstrActual = memory.ReadLeWord32(4);
+
+        Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
+    }
+
     [Test]
     public void RiscvAsm_sltiu()
     {
