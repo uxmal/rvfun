@@ -10,7 +10,8 @@ var bytes = new byte[1024];
 var mem = new Memory(bytes);
 var x = new int[32];
 
-var m = new Assembler(mem);
+var logger = new Logger();
+var m = new Assembler(mem, logger);
 
 m.j("skip");
 
@@ -24,7 +25,8 @@ m.label("skip");
 m.lw(10, 0, 4);
 m.jalr(0, 10, 0);
 
-m.Relocate();
+var linker = new Linker(mem, m.Symbols, m.Relocations, logger);
+linker.Relocate();
 
 /*
 m.li(11, 10);

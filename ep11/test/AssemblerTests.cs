@@ -264,7 +264,7 @@ public class AssemblerTests
         Assert.That(asm.Symbols["mylabel"].Address, Is.EqualTo(4u));
     }
 
-        [Test]
+    [Test]
     public void RiscAsm_symbol_redefinition()
     {
         var asm = Assemble(m =>
@@ -273,9 +273,8 @@ public class AssemblerTests
             m.label("mylabel");
             m.li(2, 10);
             m.label("mylabel");
-
         });
-        Assert.That(asm.Errors.Count, Is.EqualTo(1));
+        Assert.That(asm.Logger.Errors.Count, Is.EqualTo(1));
     }
 
     [Test]

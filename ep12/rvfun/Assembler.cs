@@ -4,30 +4,22 @@ namespace rvfun;
 
 public class Assembler
 {
-    private Memory memory;
+    private readonly Memory memory;
     private uint instrPtr;
 
-    private static readonly BitField bf1L4 = new BitField(1, 4);
-    private static readonly BitField bf5L6 = new BitField(5, 6);
-    private static readonly BitField bf11L1 = new BitField(11, 1);
-    private static readonly BitField bf12L1 = new BitField(12, 1);
-
-    private static readonly BitField bf1L10 = new BitField(1, 10);
-    private static readonly BitField bf12L8 = new BitField(12, 8);
-    private static readonly BitField bf20L1 = new BitField(20, 1);
-
-    public Assembler(Memory memory)
+    public Assembler(Memory memory, Logger logger)
     {
         this.memory = memory;
         this.instrPtr = 0;
         this.Symbols = new();
-        this.Errors = new();
         this.Relocations = new();
+        this.Logger = logger;
     }
 
     public Dictionary<string, Symbol> Symbols {get; }
-    public List<string> Errors {get;}
     public List<Relocation> Relocations {get;}
+
+    public Logger Logger {get;}
 
             public void add(int dst, int src1, int src2) {
                 asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2);
@@ -813,49 +805,20 @@ public class Assembler
     {
         uint uInstr = opcode;
         uInstr |= (uint)(rd & 0b11111) << 7;
-        uInstr |= EncodeJdisplacement(offset);
+        uInstr |= AsmEncoder.EncodeJdisplacement(offset);
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
-    private static uint EncodeJdisplacement(int offset)
-    {
-        uint uOffset = (uint)offset;
-        uint encodedDisplacement = 0;
-        var bits1_10 = bf1L10.ExtractUnsigned(uOffset);
-        var bit11 = bf11L1.ExtractUnsigned(uOffset);
-        var bits12_19 = bf12L8.ExtractUnsigned(uOffset);
-        var bit20 = bf20L1.ExtractUnsigned(uOffset);
-        encodedDisplacement |= bits1_10 << 21;
-        encodedDisplacement |= bit11 << 20;
-        encodedDisplacement |= bits12_19 << 12;
-        encodedDisplacement |= bit20 << 31;
-        return encodedDisplacement;
-    }
 
     private void asmB(uint opcode, int src1, int src2, int offset)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
-        uInstr |= EncodeBdisplacement(offset);
+        uInstr |= AsmEncoder.EncodeBdisplacement(offset);
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
-    }
-
-    private static uint EncodeBdisplacement(int offset)
-    {
-        uint uOffset = (uint)offset;
-        uint encodedDisplacement = 0;
-        var bits1_4 = bf1L4.ExtractUnsigned(uOffset);
-        var bits5_10 = bf5L6.ExtractUnsigned(uOffset);
-        var bit11 = bf11L1.ExtractUnsigned(uOffset);
-        var bit12 = bf12L1.ExtractUnsigned(uOffset);
-        encodedDisplacement |= bits1_4 << 8;
-        encodedDisplacement |= bits5_10 << 25;
-        encodedDisplacement |= bit11 << 7;
-        encodedDisplacement |= bit12 << 31;
-        return encodedDisplacement;
     }
 
     private void asmS(uint opcode, int src2, int baseReg, int offset)
@@ -969,7 +932,7 @@ public class Assembler
     {
         if (Symbols.ContainsKey(sLabel))
         {
-            ReportError("error: label {sLabel} was redefined.");
+            Logger.ReportError("error: label {sLabel} was redefined.");
             return;
         }
         var sym = new Symbol(sLabel, instrPtr);
@@ -983,45 +946,5 @@ public class Assembler
         this.Relocations.Add(rel);
     }
 
-    private void ReportError(string errorMsg)
-    {
-        this.Errors.Add(errorMsg);
-        Console.Out.WriteLine(errorMsg);
-    }
-
-    public void Relocate()
-    {
-        foreach (var rel in this.Relocations)
-        {
-            Relocate(rel);
-        }
-    }
-
-    private void Relocate(Relocation rel)
-    {
-        if (!Symbols.TryGetValue(rel.SymbolName, out var symbol))
-        {
-            ReportError($"Unknown symbol {rel.SymbolName}");
-            return;
-        }
-        var uInstr = memory.ReadLeWord32(rel.Address);
-        int displacement = (int) symbol.Address - (int) rel.Address;
-        switch (rel.Rtype)
-        {
-            case RelocationType.J_PcRelative:
-                uInstr |= EncodeJdisplacement(displacement);
-                memory.WriteLeWord32(rel.Address, uInstr);
-                break;
-            case RelocationType.B_PcRelative:
-                uInstr |= EncodeBdisplacement(displacement);
-                memory.WriteLeWord32(rel.Address, uInstr);
-                break;
-            case RelocationType.W32_Absolute:
-                memory.WriteLeWord32(rel.Address, symbol.Address);
-                break;
-            default:
-                throw new NotImplementedException($"Unimplemented relocation type {rel.Rtype}.");
-        }
-    }
 }
 

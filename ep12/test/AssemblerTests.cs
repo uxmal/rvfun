@@ -18,25 +18,27 @@ public class AssemblerTests
         Given_Memory();
     }
 
+    private Assembler Assemble(Action<Assembler> asmClient)
+    {
+        var m = new Assembler(memory, new Logger());
+
+        asmClient(m);
+        return m;
+    }
+
     private void Given_Memory()
     {
         var bytes = new byte[1024];
         this.memory = new Memory(bytes);
     }
 
-    private Assembler Assemble(Action<Assembler> asmClient)
-    {
-        var m = new Assembler(memory);
 
-        asmClient(m);
-        return m;
-    }
 
     private void RunTest(uint uInstrExpected, Action<Assembler> testBuilder)
     {
         var bytes = new byte[1024];
         var memory = new Memory(bytes);
-        var m = new Assembler(memory);
+        var m = new Assembler(memory, new Logger());
 
         testBuilder(m);
 
@@ -275,7 +277,7 @@ public class AssemblerTests
             m.label("mylabel");
 
         });
-        Assert.That(asm.Errors.Count, Is.EqualTo(1));
+        Assert.That(asm.Logger.Errors.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -291,55 +293,7 @@ public class AssemblerTests
         Assert.That(rel.Rtype, Is.EqualTo(RelocationType.B_PcRelative));
     }
 
-    [Test]
-    public void RiscAsm_reloc_relocate()
-    {
-        var asm2 = Assemble(m => 
-        {
-            m.li(4, 4);
-            m.jal(0, -4);
-        });
-        var uInstrExpected = memory.ReadLeWord32(4);
 
-        Given_Memory();
-
-        var asm = Assemble(m =>
-        {
-            m.label("mylabel");
-            m.li(4, 4);
-            m.jal(0, "mylabel");
-
-            m.Relocate();
-        });
-        var uInstrActual = memory.ReadLeWord32(4);
-
-        Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
-    }
-
-        [Test]
-    public void RiscAsm_reloc_relocate_br()
-    {
-        var asm2 = Assemble(m => 
-        {
-            m.li(4, 4);
-            m.blt(3, 11, -4);
-        });
-        var uInstrExpected = memory.ReadLeWord32(4);
-
-        Given_Memory();
-
-        var asm = Assemble(m =>
-        {
-            m.label("mylabel");
-            m.li(4, 4);
-            m.blt(3, 11, "mylabel");
-
-            m.Relocate();
-        });
-        var uInstrActual = memory.ReadLeWord32(4);
-
-        Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
-    }
 
     [Test]
     public void RiscvAsm_sltiu()

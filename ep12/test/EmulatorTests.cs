@@ -23,7 +23,7 @@ public class EmulatorTests
 
     private void RunTest(Action<Assembler> testBuilder)
     {
-        var asm = new Assembler(memory);
+        var asm = new Assembler(memory, new Logger());
         testBuilder(asm);
         exitCode = emu.exec();
     }
