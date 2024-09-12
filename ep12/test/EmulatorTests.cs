@@ -1,4 +1,5 @@
 namespace rvfun.UnitTests;
+
 using rvfun;
 using static rvfun.Mnemonics;
 
@@ -33,7 +34,7 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 2, 0, 42);
+            m.addi(2, 0, 42);
         });
         Assert.AreEqual(42, emu.Registers[2]);
     }
@@ -43,7 +44,7 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 0, 0, 42);
+            m.addi(0, 0, 42);
         });
         Assert.AreEqual(0, emu.Registers[0]);
     }
@@ -53,7 +54,7 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 2, 0, -2);
+            m.addi(2, 0, -2);
         });
         Assert.AreEqual(-2, emu.Registers[2]);
     }
@@ -67,7 +68,7 @@ public class EmulatorTests
             emu.Registers[5] = 5;
             emu.Registers[6] = 6;
 
-            m.asm(add, 4, 5, 6);
+            m.add(4, 5, 6);
         });
         Assert.AreEqual(11, emu.Registers[4]);
     }
@@ -81,7 +82,7 @@ public class EmulatorTests
             emu.Registers[5] = 5;
             emu.Registers[6] = 6;
 
-            m.asm(mul, 4, 5, 6);
+            m.mul(4, 5, 6);
         });
         Assert.AreEqual(30, emu.Registers[4]);
     }
@@ -94,7 +95,7 @@ public class EmulatorTests
             emu.Registers[4] = 4;
             emu.Registers[5] = 5;
 
-            m.asm(slti, 4, 5, 6);
+            m.slti(4, 5, 6);
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
@@ -107,7 +108,7 @@ public class EmulatorTests
             emu.Registers[4] = 4;
             emu.Registers[5] = 5;
 
-            m.asm(slti, 4, 5, 5);
+            m.slti(4, 5, 5);
         });
         Assert.AreEqual(0, emu.Registers[4]);
     }
@@ -120,7 +121,7 @@ public class EmulatorTests
             emu.Registers[4] = -4;
             emu.Registers[5] = 5;
 
-            m.asm(sltiu, 4, 5, -2);
+            m.sltiu(4, 5, -2);
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
@@ -133,7 +134,7 @@ public class EmulatorTests
             emu.Registers[4] = -2;
             emu.Registers[5] = 5;
 
-            m.asm(slti, 4, 5, 5);
+            m.slti(4, 5, 5);
         });
         Assert.AreEqual(0, emu.Registers[4]);
     }
@@ -148,7 +149,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x4;
             emu.Registers[5] = 0x4;
 
-            m.asm(lb, 4, 5, 0x4);
+            m.lb(4, 5, 0x4);
         });
         Assert.AreEqual(unchecked((int)0xFFFFFF82), emu.Registers[4]);
     }
@@ -162,7 +163,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x4;
             emu.Registers[5] = 0x4;
 
-            m.asm(lbu, 4, 5, 0x4);
+            m.lbu(4, 5, 0x4);
         });
         Assert.AreEqual((int)0x00000082, emu.Registers[4]);
     }
@@ -177,7 +178,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x4;
             emu.Registers[5] = 0x4;
 
-            m.asm(lh, 4, 5, 0x4);
+            m.lh(4, 5, 0x4);
         });
         Assert.AreEqual(unchecked((int)0xFFFF8765), emu.Registers[4]);
     }
@@ -193,7 +194,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x4;
             emu.Registers[5] = 0x4;
 
-            m.asm(lhu, 4, 5, 0x4);
+            m.lhu(4, 5, 0x4);
         });
         Assert.AreEqual((int)0x00008765, emu.Registers[4]);
     }
@@ -210,7 +211,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x4;
             emu.Registers[5] = 0x4;
 
-            m.asm(lw, 4, 5, 0x4);
+            m.lw(4, 5, 0x4);
         });
         Assert.AreEqual((int)0x12345678, emu.Registers[4]);
     }
@@ -223,7 +224,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x12345678;
             emu.Registers[5] = 0x4;
 
-            m.asm(sb, 4, 5, 0x124);
+            m.sb(4, 5, 0x124);
         });
         Assert.AreEqual(0x78, memory.ReadLeWord32(0x128));
     }
@@ -236,7 +237,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x12345678;
             emu.Registers[5] = 0x4;
 
-            m.asm(sh, 4, 5, 0x124);
+            m.sh(4, 5, 0x124);
         });
         Assert.AreEqual(0x5678, memory.ReadLeWord32(0x128));
     }
@@ -249,7 +250,7 @@ public class EmulatorTests
             emu.Registers[4] = 0x12345678;
             emu.Registers[5] = 0x4;
 
-            m.asm(sw, 4, 5, 0x124);
+            m.sw(4, 5, 0x124);
         });
         Assert.AreEqual(0x12345678, memory.ReadLeWord32(0x128));
     }
@@ -259,10 +260,10 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 4, 0, 1);
-            m.asm(jal, 0, 8, 0);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(4, 0, 1);
+            m.jal(0, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
@@ -272,10 +273,10 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 4, 0, 1);
-            m.asm(bne, 4, 0, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(4, 0, 1);
+            m.bne(4, 0, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
@@ -285,10 +286,10 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 4, 0, 1);
-            m.asm(bge, 4, 0, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(4, 0, 1);
+            m.bge(4, 0, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(1, emu.Registers[4]);
     }
@@ -301,10 +302,10 @@ public class EmulatorTests
             emu.Registers[1] = 0x8;
             emu.Registers[10] = 1;
 
-            m.asm(jalr, 0, 1, 0);
-            m.asm(addi, 10, 0, 0x42);
+            m.jalr(0, 1, 0);
+            m.addi(10, 0, 0x42);
 
-            m.asm(addi, 11, 10, 0);
+            m.addi(11, 10, 0);
         });
         Assert.AreEqual(1, emu.Registers[11]);
     }
@@ -317,8 +318,8 @@ public class EmulatorTests
             emu.Registers[17] = 0;
             emu.Registers[10] = 1;
 
-            m.asm(ecall, 0, 0, 0);
-            m.asm(addi, 10, 0, 0x42);
+            m.ecall(0, 0, 0);
+            m.addi(10, 0, 0x42);
         });
         Assert.AreEqual(1, emu.Registers[10]);
         Assert.AreEqual(1, exitCode!.Value);
@@ -329,8 +330,8 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(lui, 1, 0x12345, 0);
-            m.asm(addi, 1, 1, 0x678);
+            m.lui(1, 0x12345, 0);
+            m.addi(1, 1, 0x678);
         });
         Assert.AreEqual(0x12345678, emu.Registers[1]);
     }
@@ -340,27 +341,10 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(auipc, 1, 0x12345, 0);
-            m.asm(addi, 1, 1, 0x678);
+            m.auipc(1, 0x12345, 0);
+            m.addi(1, 1, 0x678);
         });
         Assert.AreEqual(0x12345678, emu.Registers[1]);
-    }
-
-
-
-
-
-
-    [Test]
-    [Ignore("nyi")]
-    public void RiscVEmu_jal()
-    {
-        RunTest(m =>
-                {
-
-                    m.asm(jal, -1, -1, -1);
-                });
-        Assert.Fail("Not implemented");
     }
 
     [Test]
@@ -368,27 +352,23 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 4, 0, 0);
-            m.asm(beq, 4, 0, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(4, 0, 0);
+            m.beq(4, 0, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(0, emu.Registers[4]);
     }
-
-
-
-
 
     [Test]
     public void RiscVEmu_blt()
     {
         RunTest(m =>
         {
-            m.asm(addi, 4, 0, -2);
-            m.asm(blt, 4, 0, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(4, 0, -2);
+            m.blt(4, 0, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(-2, emu.Registers[4]); 
     }
@@ -402,11 +382,11 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 3, 0, -2);
-            m.asm(addi, 4, 0, 1);
-            m.asm(bltu, 4, 3, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(3, 0, -2);
+            m.addi(4, 0, 1);
+            m.bltu(4, 3, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(1, emu.Registers[4]); 
     }
@@ -417,11 +397,11 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.asm(addi, 3, 0, -2);
-            m.asm(addi, 4, 0, 1);
-            m.asm(bgeu, 3, 4, 8);
-            m.asm(addi, 4, 0, -1);
-            m.asm(addi, 0, 0, 0);
+            m.addi(3, 0, -2);
+            m.addi(4, 0, 1);
+            m.bgeu(3, 4, 8);
+            m.addi(4, 0, -1);
+            m.addi(0, 0, 0);
         });
         Assert.AreEqual(1, emu.Registers[4]); 
     }
@@ -434,7 +414,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
                     emu.Registers[4] = 0x55555555; 
-                    m.asm(xori, 5, 4, -1);
+                    m.xori(5, 4, -1);
                 });
                 Assert.AreEqual(unchecked((int)0xAAAAAAAA), emu.Registers[5]);
     }
@@ -446,7 +426,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
                     emu.Registers[4] = 0x55555555; 
-                    m.asm(ori, 5, 4, -1);
+                    m.ori(5, 4, -1);
                 });
                 Assert.AreEqual(unchecked((int)0xFFFFFFFF), emu.Registers[5]);
     }
@@ -458,7 +438,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
                     emu.Registers[4] = 0x55555555; 
-                    m.asm(andi, 5, 4, 0xF);
+                    m.andi(5, 4, 0xF);
                 });
                 Assert.AreEqual(5, emu.Registers[5]);
     }
@@ -469,8 +449,8 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 2);           // 0000010
-                    m.asm(slli, 5, 4, 1);
+                    m.addi(4, 0, 2);           // 0000010
+                    m.slli(5, 4, 1);
                 });
         Assert.AreEqual(4, emu.Registers[5]);
     }
@@ -481,8 +461,8 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 4);           // 0000100
-                    m.asm(srli, 5, 4, 1);
+                    m.addi(4, 0, 4);           // 0000100
+                    m.srli(5, 4, 1);
                 });
         Assert.AreEqual(2, emu.Registers[5]);
     }
@@ -493,9 +473,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, -1);
+                    m.addi(4, 0, -1);
 
-                    m.asm(srai, 5, 4, 4);
+                    m.srai(5, 4, 4);
                 });
         Assert.AreEqual(-1, emu.Registers[5]);
     }
@@ -507,9 +487,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 2);
-                    m.asm(addi, 5, 0, 3);
-                    m.asm(sub, 3, 4, 5);
+                    m.addi(4, 0, 2);
+                    m.addi(5, 0, 3);
+                    m.sub(3, 4, 5);
                 });
         Assert.AreEqual(-1, emu.Registers[3]);
     }
@@ -520,9 +500,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 2);
-                    m.asm(addi, 3, 0, 3);
-                    m.asm(sll, 5, 4, 3);
+                    m.addi(4, 0, 2);
+                    m.addi(3, 0, 3);
+                    m.sll(5, 4, 3);
                 });
         Assert.AreEqual(0x10, emu.Registers[5]);
     }
@@ -534,9 +514,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, reg1);
-                    m.asm(addi, 5, 0, reg2);
-                    m.asm(slt, 6, 4, 5);
+                    m.addi(4, 0, reg1);
+                    m.addi(5, 0, reg2);
+                    m.slt(6, 4, 5);
                 });
                 Assert.AreEqual(result, emu.Registers[6]);
     }
@@ -548,9 +528,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, (int)reg1);
-                    m.asm(addi, 5, 0, (int)reg2);
-                    m.asm(sltu, 6, 4, 5);
+                    m.addi(4, 0, (int)reg1);
+                    m.addi(5, 0, (int)reg2);
+                    m.sltu(6, 4, 5);
                 });
                 Assert.AreEqual(result, emu.Registers[6]);
     }
@@ -561,9 +541,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 0xAAA);
-                    m.asm(addi, 5, 0, 0xFFF);
-                    m.asm(xor, 6, 4, 5);
+                    m.addi(4, 0, 0xAAA);
+                    m.addi(5, 0, 0xFFF);
+                    m.xor(6, 4, 5);
                 });
                 Assert.AreEqual(0x555, emu.Registers[6]);
     }
@@ -574,9 +554,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 6);
-                    m.asm(addi, 5, 0, 1);
-                    m.asm(srl, 6, 4, 5);
+                    m.addi(4, 0, 6);
+                    m.addi(5, 0, 1);
+                    m.srl(6, 4, 5);
                 });
                 Assert.AreEqual(3, emu.Registers[6]);
     }
@@ -587,9 +567,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, -20);
-                    m.asm(addi, 5, 0, 10);
-                    m.asm(sra, 6, 4, 5);
+                    m.addi(4, 0, -20);
+                    m.addi(5, 0, 10);
+                    m.sra(6, 4, 5);
                 });
                 Assert.AreEqual(-1, emu.Registers[6]);
         }
@@ -600,9 +580,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 0x2AA);
-                    m.asm(addi, 5, 0, 0x0F0);
-                    m.asm(or, 6, 4, 5);
+                    m.addi(4, 0, 0x2AA);
+                    m.addi(5, 0, 0x0F0);
+                    m.or(6, 4, 5);
                 });
                 Assert.AreEqual(0x2FA, emu.Registers[6]);
     }
@@ -613,9 +593,9 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    m.asm(addi, 4, 0, 0xAAA);
-                    m.asm(addi, 5, 0, 0x0F0);
-                    m.asm(and, 6, 4, 5);
+                    m.addi(4, 0, 0xAAA);
+                    m.addi(5, 0, 0x0F0);
+                    m.and(6, 4, 5);
                 });
                 Assert.AreEqual(0x0A0, emu.Registers[6]);
     }
@@ -653,7 +633,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(ebreak, -1, -1, -1);
+                    m.ebreak(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -667,7 +647,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(lwu, -1, -1, -1);
+                    m.lwu(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -680,7 +660,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(ld, -1, -1, -1);
+                    m.ld(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -693,7 +673,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(sd, -1, -1, -1);
+                    m.sd(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -706,7 +686,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(addiw, -1, -1, -1);
+                    m.addiw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -719,7 +699,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(slliw, -1, -1, -1);
+                    m.slliw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -732,7 +712,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(srliw, -1, -1, -1);
+                    m.srliw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -745,7 +725,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(sraiw, -1, -1, -1);
+                    m.sraiw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -758,7 +738,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(addw, -1, -1, -1);
+                    m.addw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -771,7 +751,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(subw, -1, -1, -1);
+                    m.subw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -784,7 +764,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(sllw, -1, -1, -1);
+                    m.sllw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -797,7 +777,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(srlw, -1, -1, -1);
+                    m.srlw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -810,7 +790,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(sraw, -1, -1, -1);
+                    m.sraw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -839,7 +819,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrw, -1, -1, -1);
+                    m.csrrw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -852,7 +832,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrs, -1, -1, -1);
+                    m.csrrs(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -865,7 +845,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrc, -1, -1, -1);
+                    m.csrrc(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -878,7 +858,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrwi, -1, -1, -1);
+                    m.csrrwi(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -891,7 +871,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrsi, -1, -1, -1);
+                    m.csrrsi(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -904,7 +884,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(csrrci, -1, -1, -1);
+                    m.csrrci(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -919,7 +899,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(mulh, -1, -1, -1);
+                    m.mulh(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -932,7 +912,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(mulhsu, -1, -1, -1);
+                    m.mulhsu(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -945,7 +925,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(mulhu, -1, -1, -1);
+                    m.mulhu(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -958,7 +938,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(div, -1, -1, -1);
+                    m.div(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -971,7 +951,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(divu, -1, -1, -1);
+                    m.divu(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -984,7 +964,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(rem, -1, -1, -1);
+                    m.rem(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -997,7 +977,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(remu, -1, -1, -1);
+                    m.remu(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1012,7 +992,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(mulw, -1, -1, -1);
+                    m.mulw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1025,7 +1005,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(divw, -1, -1, -1);
+                    m.divw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1038,7 +1018,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(divuw, -1, -1, -1);
+                    m.divuw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1051,7 +1031,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(remw, -1, -1, -1);
+                    m.remw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1064,7 +1044,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(remuw, -1, -1, -1);
+                    m.remuw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }

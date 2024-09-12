@@ -350,6 +350,403 @@ public class Assembler
     }
 
 
+            public void flw(int dst, int src1, int src2) {
+                        asmI(0b010_00000_0000111, dst, src1, src2);
+}
+            public void fsw(int dst, int src1, int src2) {
+                        asmS(0b010_00000_0100111, dst, src1, src2);
+}
+            public void fmadd_s(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b00_00000_00000_000_00000_1000011, dst, src1, src2, src3, rm);
+}
+            public void fmsub_s(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b00_00000_00000_000_00000_1000111, dst, src1, src2, src3, rm);
+}
+            public void fnmsub_s(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b00_00000_00000_000_00000_1001011, dst, src1, src2, src3, rm);
+}
+            public void fnmadd_s(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b00_00000_00000_000_00000_1001111, dst, src1, src2, src3, rm);
+}
+            public void fadd_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000000_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsub_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000100_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fmul_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001000_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fdiv_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001100_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsqrt_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0101100_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fsgnj_s(int dst, int src1, int src2) {
+                        asmR(0b0010000_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjn_s(int dst, int src1, int src2) {
+                        asmR(0b0010000_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjx_s(int dst, int src1, int src2) {
+                        asmR(0b0010000_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void fmin_s(int dst, int src1, int src2) {
+                        asmR(0b0010100_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fmax_s(int dst, int src1, int src2) {
+                        asmR(0b0010100_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fcvt_w_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100000_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_wu_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100000_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_x_w(int dst, int src1, int src2) {
+                        asmR(0b1110000_00000_00000_000_00000_1010011, dst, src1, 0);
+}
+            public void feq_s(int dst, int src1, int src2) {
+                        asmR(0b1010000_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void flt_s(int dst, int src1, int src2) {
+                        asmR(0b1010000_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fle_s(int dst, int src1, int src2) {
+                        asmR(0b1010000_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fclass_s(int dst, int src1, int src2) {
+                        asmR(0b1110000_00000_00000_001_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_s_w(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101000_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_s_wu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101000_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_w_x(int dst, int src1, int src2) {
+                        asmR(0b1111000_00000_00000_000_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_l_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100000_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_lu_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100000_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_s_l(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101000_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_s_lu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101000_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+
+            public void fld(int dst, int src1, int src2) {
+                        asmI(0b011_00000_0000111, dst, src1, src2);
+}
+            public void fsd(int dst, int src1, int src2) {
+                        asmS(0b011_00000_0100111, dst, src1, src2);
+}
+            public void fmadd_d(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b01_00000_00000_000_00000_1000011, dst, src1, src2, src3, rm);
+}
+            public void fmsub_d(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b01_00000_00000_000_00000_1000111, dst, src1, src2, src3, rm);
+}
+            public void fnmsub_d(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b01_00000_00000_000_00000_1001011, dst, src1, src2, src3, rm);
+}
+            public void fnmadd_d(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b01_00000_00000_000_00000_1001111, dst, src1, src2, src3, rm);
+}
+            public void fadd_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000001_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsub_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000101_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fmul_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001001_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fdiv_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001101_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsqrt_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0101101_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fsgnj_d(int dst, int src1, int src2) {
+                        asmR(0b0010001_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjn_d(int dst, int src1, int src2) {
+                        asmR(0b0010001_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjx_d(int dst, int src1, int src2) {
+                        asmR(0b0010001_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void fmin_d(int dst, int src1, int src2) {
+                        asmR(0b0010101_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fmax_d(int dst, int src1, int src2) {
+                        asmR(0b0010101_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fcvt_s_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100000_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100001_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void feq_d(int dst, int src1, int src2) {
+                        asmR(0b1010001_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void flt_d(int dst, int src1, int src2) {
+                        asmR(0b1010001_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fle_d(int dst, int src1, int src2) {
+                        asmR(0b1010001_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fclass_d(int dst, int src1, int src2) {
+                        asmR(0b1110001_00000_00000_001_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_w_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100001_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_wu_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100001_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_w(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101001_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_wu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101001_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_l_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100001_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_lu_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100001_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_x_d(int dst, int src1, int src2) {
+                        asmR(0b1110001_00000_00000_000_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_d_l(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101001_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_lu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101001_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_d_x(int dst, int src1, int src2) {
+                        asmR(0b1111001_00000_00000_000_00000_1010011, dst, src1, 00000);
+}
+
+            public void flq(int dst, int src1, int src2) {
+                        asmI(0b100_00000_0000111, dst, src1, src2);
+}
+            public void fsq(int dst, int src1, int src2) {
+                        asmS(0b100_00000_0100111, dst, src1, src2);
+}
+            public void fmadd_q(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b11_00000_00000_000_00000_1000011, dst, src1, src2, src3, rm);
+}
+            public void fmsub_q(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b11_00000_00000_000_00000_1000111, dst, src1, src2, src3, rm);
+}
+            public void fnmsub_q(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b11_00000_00000_000_00000_1001011, dst, src1, src2, src3, rm);
+}
+            public void fnmadd_q(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b11_00000_00000_000_00000_1001111, dst, src1, src2, src3, rm);
+}
+            public void fadd_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000011_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsub_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000111_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fmul_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001011_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fdiv_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001111_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsqrt_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0101111_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fsgnj_q(int dst, int src1, int src2) {
+                        asmR(0b0010011_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjn_q(int dst, int src1, int src2) {
+                        asmR(0b0010011_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjx_q(int dst, int src1, int src2) {
+                        asmR(0b0010011_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void fmin_q(int dst, int src1, int src2) {
+                        asmR(0b0010111_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fmax_q(int dst, int src1, int src2) {
+                        asmR(0b0010111_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fcvt_s_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100000_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100011_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100001_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100011_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void feq_q(int dst, int src1, int src2) {
+                        asmR(0b1010011_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void flt_q(int dst, int src1, int src2) {
+                        asmR(0b1010011_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fle_q(int dst, int src1, int src2) {
+                        asmR(0b1010011_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fclass_q(int dst, int src1, int src2) {
+                        asmR(0b1110011_00000_00000_001_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_w_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100011_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_wu_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100011_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_w(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101011_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_wu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101011_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+
+            public void fcvt_l_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100011_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_lu_q(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100011_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_l(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101011_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_lu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101011_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+
+            public void flh(int dst, int src1, int src2) {
+                        asmI(0b001_00000_0000111, dst, src1, src2);
+}
+            public void fsh(int dst, int src1, int src2) {
+                        asmS(0b001_00000_0100111, dst, src1, src2);
+}
+            public void fmadd_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b10_00000_00000_000_00000_1000011, dst, src1, src2, src3, rm);
+}
+            public void fmsub_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b10_00000_00000_000_00000_1000111, dst, src1, src2, src3, rm);
+}
+            public void fnmsub_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b10_00000_00000_000_00000_1001011, dst, src1, src2, src3, rm);
+}
+            public void fnmadd_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR4(0b10_00000_00000_000_00000_1001111, dst, src1, src2, src3, rm);
+}
+            public void fadd_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000010_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsub_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0000110_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fmul_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001010_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fdiv_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0001110_00000_00000_000_00000_1010011, dst, src1, src2, rm);
+}
+            public void fsqrt_h(int dst, int src1, int rm) {
+                        asmF(0b0101110_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fsgnj_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR(0b0010010_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjn_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR(0b0010010_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fsgnjx_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR(0b0010010_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void fmin_h(int dst, int src1, int src2, int src3, int rm) {
+                        asmR(0b0010110_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fmax_h(int dst, int src1, int src2) {
+                        asmR(0b0010110_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fcvt_s_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100000_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_s(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100010_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_d_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100001_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_d(int dst, int src1, int src2, int rm) {
+                        asmF(0b0100010_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_q_h(int dst, int src1, int rm) {
+                        asmF(0b0100011_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_q(int dst, int src1, int rm) {
+                        asmF(0b0100010_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void feq_h(int dst, int src1, int src2) {
+                        asmR(0b1010010_00000_00000_010_00000_1010011, dst, src1, src2);
+}
+            public void flt_h(int dst, int src1, int src2) {
+                        asmR(0b1010010_00000_00000_001_00000_1010011, dst, src1, src2);
+}
+            public void fle_h(int dst, int src1, int src2) {
+                        asmR(0b1010010_00000_00000_000_00000_1010011, dst, src1, src2);
+}
+            public void fclass_h(int dst, int src1, int src2) {
+                        asmR(0b1110010_00000_00000_001_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_w_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100010_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_wu_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100010_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_x_h(int dst, int src1, int src2) {
+                        asmR(0b1110010_00000_00000_000_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_h_w(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101010_00000_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_wu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101010_00001_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fmv_h_x(int dst, int src1, int src2) {
+                        asmR(0b1111010_00000_00000_000_00000_1010011, dst, src1, 00000);
+}
+            public void fcvt_l_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100010_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_lu_h(int dst, int src1, int src2, int rm) {
+                        asmF(0b1100010_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_l(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101010_00010_00000_000_00000_1010011, dst, src1, rm);
+}
+            public void fcvt_h_lu(int dst, int src1, int src2, int rm) {
+                        asmF(0b1101010_00011_00000_000_00000_1010011, dst, src1, rm);
+}
+
+
+
 
 
     public void asm(Mnemonics operation, int dst, int src1, int src2, int src3 = 0, int rm = 0)
@@ -519,7 +916,6 @@ public class Assembler
             // 10100 aq rl rs2 rs1 011 rd 0101111 amomax_d
             // 11000 aq rl rs2 rs1 011 rd 0101111 amominu_d
             // 11100 aq rl rs2 rs1 011 rd 0101111 amomaxu_d
-
 
             case Mnemonics.flw:
                 asmI(0b010_00000_0000111, dst, src1, src2); break;
