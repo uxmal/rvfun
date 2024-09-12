@@ -341,7 +341,7 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            m.auipc(1, 0x12345, 0);
+            m.auipc(1, 0x12345);
             m.addi(1, 1, 0x678);
         });
         Assert.AreEqual(0x12345678, emu.Registers[1]);

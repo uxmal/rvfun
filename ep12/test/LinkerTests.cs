@@ -1,16 +1,15 @@
 namespace rvfun.UnitTests;
 
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Reko.Arch.RiscV;
+
 using NUnit.Framework;
+using Reko.Core.Memory;
+using Reko.Core;
+using System.Diagnostics;
 
 [TestFixture]
 public class LinkerTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     private Memory CreateMemory()
     {
         var bytes = new byte[1024];
@@ -86,4 +85,41 @@ public class LinkerTests
         Assert.That(uInstrActual, Is.EqualTo(uInstrExpected));
     }
 
+    [Test]
+    public void RiscAsm_reloc_pcrel_positive_displacement()
+    {
+        var result = RunTest(m =>
+        {
+            m.auipc(4, 0x20);
+            m.addi(4, 4, 4);
+        },
+        m =>
+        {
+            m.AddSymbol("sym", 0x20004);
+            m.auipc(4, m.pcrel_hi("sym"));
+            m.addi(4, 4, m.pcrel_lo(-4));
+        });
+
+        Dasm(result.symbolMemory, 0, 16);
+
+        var uInstrExpected = result.noSymbolMemory.ReadLeWord32(4);
+        var uInstrActual = result.symbolMemory.ReadLeWord32(4);
+
+        Assert.That(uInstrActual.ToString("X8"), Is.EqualTo(uInstrExpected.ToString("X8")));
+    }
+
+    private void Dasm(Memory symbolMemory, int uAddr, int length)
+    {
+        var bytes = symbolMemory.GetSpan(uAddr, length).ToArray();
+        var mem = new ByteMemoryArea(Address.Ptr32((uint)uAddr), bytes);
+        var arch = new RiscVArchitecture(null!, "riscv", new());
+        var rdr = mem.CreateLeReader(0, length);
+        var dasm = arch.CreateDisassembler(rdr);
+        foreach (var instr in dasm)
+        {
+            uint uInstr =  rdr.PeekLeUInt32(-4);
+            Console.WriteLine("{0}: {1:X8} {2}", instr.Address, uInstr, instr.ToString());
+            Debug.Print("{0}: {1:X8} {2}", instr.Address, uInstr, instr.ToString());
+        }
+    }
 }

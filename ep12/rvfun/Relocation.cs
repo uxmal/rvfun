@@ -20,5 +20,7 @@ public enum RelocationType{
 
     J_PcRelative,
     B_PcRelative,
-    W32_Absolute
+    W32_Absolute,
+    U_PcRelative_Hi20,
+    I_PcRelative_Lo12
 }

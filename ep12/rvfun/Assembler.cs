@@ -21,12 +21,29 @@ public class Assembler
 
     public Logger Logger {get;}
 
+    public Symbol? AddSymbol(string name, uint value)
+    {
+        if (Symbols.ContainsKey(name))
+        {
+            Logger.ReportError($"error: label {name} was redefined.");
+            return null;
+        }
+        var sym = new Symbol(name, value);
+        Symbols.Add(name, sym);
+        return sym;
+    }
+
             public void add(int dst, int src1, int src2) {
                 asmR(0b0000000_0000000000_000_00000_0110011, dst, src1, src2);
-}
+        }
 
             public void addi(int dst, int src1, int src2) {
                 asmI(0b000_00000_0010011, dst, src1, src2);
+            }
+
+    public void addi(int dst, int src1, Relocation rel) {
+        Relocations.Add(rel);
+        asmI(0b000_00000_0010011, dst, src1, 0);
     }
 
             public void addiw(int dst, int src1, int src2) {
@@ -45,9 +62,14 @@ public class Assembler
                 asmI(0b111_00000_0010011, dst, src1, src2);
     }
 
-            public void auipc(int dst, int src1, int src2) {
+            public void auipc(int dst, int src1) {
                 asmU(0b0010111, dst, src1);
-    }
+            }
+
+            public void auipc(int dst, Relocation rel) {
+                Relocations.Add(rel);
+                asmU(0b0010111, dst, 0);
+            }
 
             public void beq(int dst, int src1, int src2) {
                 asmB(0b000_00000_1100011, dst, src1, src2);
@@ -1235,7 +1257,7 @@ public class Assembler
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
         uInstr |= (uint)(src1 & 0b11111) << 15;
-        uInstr |= (uint)src2 << 20;
+        uInstr |= AsmEncoder.EncodeIdisplacement(src2);
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
@@ -1299,7 +1321,7 @@ public class Assembler
     {
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
-        uInstr |= (uint)src1 << 12;
+        uInstr |= AsmEncoder.EncodeUdisplacement(src1);
         memory.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
@@ -1326,21 +1348,38 @@ public class Assembler
 
     public void label(string sLabel)
     {
-        if (Symbols.ContainsKey(sLabel))
-        {
-            Logger.ReportError("error: label {sLabel} was redefined.");
-            return;
-        }
-        var sym = new Symbol(sLabel, instrPtr);
-        Symbols.Add(sLabel, sym);
+        AddSymbol(sLabel, instrPtr);
     }
 
-    
-    private void EmitRelocation(uint instrPtr, RelocationType rtype, string symbolName)
+    public Relocation pcrel_hi(string symbol)
+    {
+        var rel = new Relocation(instrPtr, RelocationType.U_PcRelative_Hi20, symbol);
+        return rel;
+    }
+
+    public Relocation pcrel_lo(int displacement)
+    {
+        var symPcrelHi = GenerateLocalSymbol(instrPtr + (uint)displacement);
+        var rel = new Relocation(instrPtr, RelocationType.I_PcRelative_Lo12, symPcrelHi.Name);
+        return rel;
+    }
+
+    private Symbol GenerateLocalSymbol(uint value)
+    {
+        string name;
+        int n = Symbols.Count+1;
+        do {
+            name = $".L_{n,0000}";
+        } while (Symbols.ContainsKey(name));
+        var sym = AddSymbol(name, value);
+        return sym!;
+    }
+
+    private Relocation EmitRelocation(uint instrPtr, RelocationType rtype, string symbolName)
     {
         var rel = new Relocation(instrPtr, rtype, symbolName);
         this.Relocations.Add(rel);
+        return rel;
     }
-
 }
 

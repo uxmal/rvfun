@@ -45,4 +45,13 @@ public class AsmEncoder
         return encodedDisplacement;
     }
 
+    public static uint EncodeUdisplacement(int src1)
+    {
+        return (uint)src1 << 12;
+    }
+
+    public static uint EncodeIdisplacement(int src2)
+    {
+        return (uint)src2 << 20;
+    }
 }
