@@ -60,7 +60,7 @@ public class Emulator
     // Executes RiscV instructions until told to stop.
     public int exec()
     {
-        while (mem.IsValidAddress(iptr))
+        while (mem.IsAccessible(iptr, AccessMode.RX))
         {
             var instr = mem.ReadLeWord32(iptr);
             if (instr == 0)

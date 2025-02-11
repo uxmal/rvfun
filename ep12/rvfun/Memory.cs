@@ -87,6 +87,14 @@ public class Memory
         return descriptor.IsInside(iptr);
     }
 
+       public bool IsAccessible(uint iptr, AccessMode requestedMode)
+    {
+        if (!descriptors.TryGetLowerBound(iptr, out var descriptor))
+            return false;
+        return descriptor.IsInside(iptr) && (requestedMode & descriptor.accessMode) == requestedMode;
+    }
+
+
     public void WriteBytes(uint address, byte[] bytesToWrite)
     {
         var (offset, bytes) = AccessPage(address, AccessMode.Write);
@@ -112,15 +120,36 @@ public class Memory
     {
         if (address == Anywhere)
         {
-            throw new NotImplementedException();
-        }
-        else
-        {
+            address = FindAvailableAddressGap((uint)bytes.Length);
             var bytesize = AlignUp((uint)bytes.Length, BytesPerPage);
             var descriptor = new MemoryDescriptor(address, bytesize, mode, bytes);
             descriptors.Add(address, descriptor);
             return address;
         }
+        else
+        {
+            if (this.descriptors.TryGetLowerBound(address, out var descriptorExisting))
+            {
+                if ((descriptorExisting.address + (uint)descriptorExisting.bytes.Length) > address)
+                    throw new InvalidOperationException("Memory areas would overlap");
+            }
+            var bytesize = AlignUp((uint)bytes.Length, BytesPerPage);
+            var descriptor = new MemoryDescriptor(address, bytesize, mode, bytes);
+            descriptors.Add(address, descriptor);
+            return address;
+        }
+    }
+
+    private uint FindAvailableAddressGap(uint length)
+    {
+        uint address = BytesPerPage;
+        foreach (var descriptor in this.descriptors.Values)
+        {
+            if (address + length <= descriptor.address)
+                return address;
+            address = descriptor.address + (uint)descriptor.bytes.Length;
+        }
+        return address;
     }
 
     private (uint offset, byte[]) AccessPage(uint address, AccessMode mode)
