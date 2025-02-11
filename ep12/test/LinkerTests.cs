@@ -110,7 +110,7 @@ public class LinkerTests
 
     private void Dasm(Memory symbolMemory, int uAddr, int length)
     {
-        var bytes = symbolMemory.GetSpan(uAddr, length).ToArray();
+        var bytes = symbolMemory.GetSpan(uAddr, length, AccessMode.Read).ToArray();
         var mem = new ByteMemoryArea(Address.Ptr32((uint)uAddr), bytes);
         var arch = new RiscVArchitecture(null!, "riscv", new());
         var rdr = mem.CreateLeReader(0, length);

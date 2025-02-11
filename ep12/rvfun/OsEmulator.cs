@@ -53,7 +53,7 @@ private readonly Memory mem;
         if (!IsHandleValid(handle))
             return -1;
         try {
-            var span = mem.GetSpan(address, length);
+            var span = mem.GetSpan(address, length, AccessMode.Write);
             handles[handle].Write(span);
         }
         catch 
