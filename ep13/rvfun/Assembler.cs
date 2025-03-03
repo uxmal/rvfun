@@ -1339,6 +1339,14 @@ public class Assembler
         instrPtr += 4;
     }
 
+    public void dw(int n, int count)
+    {
+        for (int i = 0; i < count; ++i) {
+            memory.WriteLeWord32(instrPtr, n);
+            instrPtr += 4;
+        }
+    }
+
     public void dw(string label)
     {
         EmitRelocation(instrPtr, RelocationType.W32_Absolute, label);

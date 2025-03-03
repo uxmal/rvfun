@@ -5,25 +5,64 @@ using Reko.Arch.RiscV;
 using static rvfun.Mnemonics;
 using Reko.Core.Memory;
 using Reko.Core;
+using System.ComponentModel.DataAnnotations;
 
-var bytes = new byte[1024];
+var bytes = new byte[2048];
 var mem = new Memory(bytes);
 var x = new int[32];
 
 var logger = new Logger();
 var m = new Assembler(mem, logger);
 
-m.j("skip");
+// int h = open(path, O_RDONLY);
 
-m.dw("set_r2");
+m.li(17, OsEmulator.SYSCALL_OPEN);
+m.auipc(10, m.pcrel_hi("path"));
+m.addi(10, 10, m.pcrel_lo(-4));
+m.li(11, OsEmulator.O_RDONLY);
+m.ecall(0, 0, 0);           // handle in x10 register
+m.addi(8, 10, 0);
 
-m.label("set_r2");
-m.li(2, 3);
-m.dw(0);        // Invalid instruction stops execution.
+//for (;;) {
+m.label("loop_top");
 
-m.label("skip");
-m.lw(10, 0, 4);
-m.jalr(0, 10, 0);
+//int cb = read(h, buffer, sizeof(Buffer));
+m.li(17, OsEmulator.SYSCALL_READ);
+m.add(10, 8, 0);
+m.auipc(11, m.pcrel_hi("buffer"));
+m.addi(11, 11, m.pcrel_lo(-4));
+m.li(12, 1024);
+m.ecall(0, 0, 0);           // number of bytes read in x10 register.
+
+//    if (0 >= cb)
+//        break;
+m.bge(0, 10, "loop_exit");
+
+//  write(1, buffer, cb);
+m.li(17, OsEmulator.SYSCALL_WRITE);
+m.addi(12, 10, 0);
+m.li(10, 1);
+m.auipc(11, m.pcrel_hi("buffer"));
+m.addi(11, 11, m.pcrel_lo(-4));
+m.ecall(0, 0, 0);           // number of bytes written in x10 register.
+
+m.j("loop_top");
+
+m.label("loop_exit");
+m.li(17, OsEmulator.SYSCALL_CLOSE);
+m.add(10, 8, 0);
+m.ecall(0, 0, 0);
+
+m.li(17, OsEmulator.SYSCALL_EXIT);
+m.li(10, 0);
+m.ecall(0, 0, 0);
+
+m.label("buffer");
+m.dw(0, 1024/4);
+
+m.label("path");
+m.ds(@"c:\tmp\test.txt");
+
 
 var linker = new Linker(mem, m.Symbols, m.Relocations, logger);
 linker.Relocate();

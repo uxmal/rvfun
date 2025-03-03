@@ -1,3 +1,5 @@
+using System.Text;
+using Microsoft.Win32.SafeHandles;
 using Reko.Core.Collections;
 
 namespace rvfun;
@@ -28,7 +30,7 @@ public class Memory
     public void WriteByte(uint address, byte value)
     {
         var (offset, bytes) = AccessPage(address, AccessMode.Read);
-        bytes[address] = value;
+        bytes[offset] = value;
     }
 
     public uint ReadLeWord16(uint address)
@@ -43,10 +45,10 @@ public class Memory
     public uint ReadLeWord32(uint address)
     {
         var (offset, bytes) = AccessPage(address, AccessMode.Read);
-        var b0 = bytes[address];
-        var b1 = bytes[address + 1];
-        var b2 = bytes[address + 2];
-        var b3 = bytes[address + 3];
+        var b0 = bytes[offset];
+        var b1 = bytes[offset + 1];
+        var b2 = bytes[offset + 2];
+        var b3 = bytes[offset + 3];
         return b0 +
             (uint)(b1 * 256) +
             (uint)(b2 * 65536) +
@@ -60,8 +62,8 @@ public class Memory
         var (offset, bytes) = AccessPage(address, AccessMode.Write);
         var b1 = (byte)(value >> 8);
         var b0 = (byte)value;
-        bytes[address] = b0;
-        bytes[address + 1] = b1;
+        bytes[offset] = b0;
+        bytes[offset + 1] = b1;
     }
 
 
@@ -74,10 +76,10 @@ public class Memory
         var b2 = (byte)(value >> 16);
         var b1 = (byte)(value >> 8);
         var b0 = (byte)value;
-        bytes[address] = b0;
-        bytes[address + 1] = b1;
-        bytes[address + 2] = b2;
-        bytes[address + 3] = b3;
+        bytes[offset] = b0;
+        bytes[offset + 1] = b1;
+        bytes[offset + 2] = b2;
+        bytes[offset + 3] = b3;
     }
 
     public bool IsValidAddress(uint iptr)
@@ -87,7 +89,7 @@ public class Memory
         return descriptor.IsInside(iptr);
     }
 
-       public bool IsAccessible(uint iptr, AccessMode requestedMode)
+    public bool IsAccessible(uint iptr, AccessMode requestedMode)
     {
         if (!descriptors.TryGetLowerBound(iptr, out var descriptor))
             return false;
@@ -98,13 +100,13 @@ public class Memory
     public void WriteBytes(uint address, byte[] bytesToWrite)
     {
         var (offset, bytes) = AccessPage(address, AccessMode.Write);
-        Array.Copy(bytesToWrite, 0, bytes, address, bytes.Length);
+        Array.Copy(bytesToWrite, 0, bytes, offset, bytesToWrite.Length);
     }
 
     public Span<byte> GetSpan(int address, int length, AccessMode mode)
     {
         var (offset, bytes) = AccessPage((uint)address, mode);
-        return bytes.AsSpan(address, length);
+        return bytes.AsSpan((int)offset, length);
     }
 
     public uint Allocate(uint address, uint bytesize, AccessMode mode)
@@ -168,6 +170,20 @@ public class Memory
     {
         uint result = unitsize * ((n + (unitsize - 1)) / unitsize);
         return result;
+    }
+
+    public string GetZeroTerminatedString(uint addrUtf8String)
+    {
+        var address = addrUtf8String;
+        for (;;) {
+            byte b = this.ReadByte(address);
+            if (b == 0)
+                break;
+            ++address;
+        }
+        var length = (int) (address - addrUtf8String);
+        var span = GetSpan((int)addrUtf8String, length, AccessMode.Read);
+        return Encoding.UTF8.GetString(span);
     }
 
     private class MemoryDescriptor
