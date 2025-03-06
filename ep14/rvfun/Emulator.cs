@@ -40,19 +40,25 @@ public class Emulator
     private static BitField[] bitFieldsBimm = new BitField[] { bf31L1, bf7L1, bf25L6, bf8L4 };
 
 
+    public Emulator(Memory mem, OsEmulator osEmulator, uint startAddress)
+        : this(mem, osEmulator, new int[32], startAddress) 
+    {}
 
-    public Emulator(Memory mem, OsEmulator osEmulator)
+
+    public Emulator(Memory mem, OsEmulator osEmulator, int[] registers, uint startAddress)
     {
+        if (registers.Length != 32)
+            throw new ArgumentException("Risc-V must have 32 registers.");
         this.mem = mem;
         this.osEmulator = osEmulator;
 
-        this.x = new int[32];
+        this.x = registers;
         this.regMasks = new int[32];
         for (int i = 1; i < regMasks.Length; ++i)
         {
             this.regMasks[i] = ~0;
         }
-        this.iptr = 0;
+        this.iptr = startAddress;
     }
 
     public int[] Registers => x;
@@ -60,9 +66,9 @@ public class Emulator
     // Executes RiscV instructions until told to stop.
     public int exec()
     {
-        while (mem.IsAccessible(iptr, AccessMode.RX))
+        for (;;)
         {
-            var instr = mem.ReadLeWord32(iptr);
+            var instr = mem.ReadLeWord32Executable(iptr);
             if (instr == 0)
                 break;
             ++this.instrsExecuted;

@@ -1,6 +1,8 @@
 namespace rvfun;
 
-public struct BitField
+#pragma warning disable IDE0290
+
+public readonly struct BitField
 {
     private readonly uint mask;
     private readonly int bitpos;
@@ -14,12 +16,12 @@ public struct BitField
     }
 
 
-    public uint ExtractUnsigned(uint bitvector)
+    public readonly uint ExtractUnsigned(uint bitvector)
     {
         return (bitvector >> bitpos) & mask;
     }
 
-    public int ExtractSigned(uint bitvector)
+    public readonly int ExtractSigned(uint bitvector)
     {
         int n = (int)((bitvector >> bitpos) & mask);
         n = (n << (32 - bitwidth)) >> (32-bitwidth);

@@ -21,17 +21,17 @@ public class LinkerTests
         Action<Assembler> symbolClient)
         {
             var logger = new Logger();
-            var mem = CreateMemory();
-            var asm = new Assembler(mem, logger);
+            var asm = new Assembler(logger);
             noSymbolClient(asm);
+            var mem = new Memory();
+            mem.Allocate(0, asm.Section.GetAssembledBytes(), AccessMode.RX);
 
             var logger2 = new Logger();
-            var mem2 = CreateMemory();
-            var asm2 = new Assembler(mem2, logger2);
+            var asm2 = new Assembler(logger2);
             symbolClient(asm2);
 
-            var linker = new Linker(mem2, asm2.Symbols, asm2.Relocations, new Logger());
-            linker.Relocate();
+            var linker = new Linker(asm2.Section, 0, asm2.Symbols, asm2.Relocations, new Logger());
+            var mem2 = linker.Relocate();
             return new TestResult(mem, asm, mem2, asm2);
         }
 
@@ -100,7 +100,7 @@ public class LinkerTests
             m.addi(4, 4, m.pcrel_lo(-4));
         });
 
-        Dasm(result.symbolMemory, 0, 16);
+        Dasm(result.symbolMemory, 0, 8);
 
         var uInstrExpected = result.noSymbolMemory.ReadLeWord32(4);
         var uInstrActual = result.symbolMemory.ReadLeWord32(4);

@@ -4,18 +4,18 @@ namespace rvfun;
 
 public class Assembler
 {
-    private readonly Memory memory;
     private uint instrPtr;
 
-    public Assembler(Memory memory, Logger logger)
+    public Assembler(Logger logger)
     {
-        this.memory = memory;
+        this.Section = new AssemblerSection();
         this.instrPtr = 0;
         this.Symbols = new();
         this.Relocations = new();
         this.Logger = logger;
     }
 
+    public AssemblerSection Section {get;}
     public Dictionary<string, Symbol> Symbols {get; }
     public List<Relocation> Relocations {get;}
 
@@ -1211,7 +1211,7 @@ public class Assembler
                 asmR(0b0000000_00000_00000_000_00000_1110011, 0, 0, 0b11101); break;
 
             case Mnemonics.Invalid:
-                memory.WriteLeWord32(instrPtr, 0);
+                Section.WriteLeWord32(instrPtr, 0);
                 instrPtr += 4;
                 break;
             default:
@@ -1224,7 +1224,7 @@ public class Assembler
         uint uInstr = opcode;
         uInstr |= (uint)(rd & 0b11111) << 7;
         uInstr |= AsmEncoder.EncodeJdisplacement(offset);
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1235,7 +1235,7 @@ public class Assembler
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
         uInstr |= AsmEncoder.EncodeBdisplacement(offset);
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1246,7 +1246,7 @@ public class Assembler
         uInstr |= (uint)(baseReg & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
         uInstr |= (uint)(offset >> 5) << 25;
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1258,7 +1258,7 @@ public class Assembler
         uInstr |= (uint)(dst & 0b11111) << 7;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= AsmEncoder.EncodeIdisplacement(src2);
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1269,7 +1269,7 @@ public class Assembler
         uInstr |= (uint)(dst & 0b11111) << 7;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1282,7 +1282,7 @@ public class Assembler
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
         uInstr |= (uint)(src3 & 0b11111) << 27;
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1296,7 +1296,7 @@ public class Assembler
         uInstr |= (uint)(roundingMode & 0b111) << 12;
         uInstr |= (uint)(src1 & 0b11111) << 15;
         uInstr |= (uint)(src2 & 0b11111) << 20;
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1310,7 +1310,7 @@ public class Assembler
         uInstr |= (uint)(dst & 0b11111) << 7;
         uInstr |= (uint)(roundingMode & 0b111) << 12;
         uInstr |= (uint)(src1 & 0b11111) << 15;
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
@@ -1322,27 +1322,27 @@ public class Assembler
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
         uInstr |= AsmEncoder.EncodeUdisplacement(src1);
-        memory.WriteLeWord32(instrPtr, uInstr);
+        Section.WriteLeWord32(instrPtr, uInstr);
         instrPtr += 4;
     }
 
     public void ds(string str)
     {
         var bytes = Encoding.UTF8.GetBytes(str);
-        memory.WriteBytes(instrPtr, bytes);
+        Section.WriteBytes(instrPtr, bytes);
         instrPtr += (uint)bytes.Length;
     }
 
     public void dw(int n)
     {
-        memory.WriteLeWord32(instrPtr, n);
+        Section.WriteLeWord32(instrPtr, n);
         instrPtr += 4;
     }
 
     public void dw(int n, int count)
     {
         for (int i = 0; i < count; ++i) {
-            memory.WriteLeWord32(instrPtr, n);
+            Section.WriteLeWord32(instrPtr, n);
             instrPtr += 4;
         }
     }
@@ -1350,7 +1350,7 @@ public class Assembler
     public void dw(string label)
     {
         EmitRelocation(instrPtr, RelocationType.W32_Absolute, label);
-        memory.WriteLeWord32(instrPtr, 0);
+        Section.WriteLeWord32(instrPtr, 0);
         instrPtr += 4;
     }
 

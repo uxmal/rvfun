@@ -55,6 +55,20 @@ public class Memory
             (uint)(b3 * 256 * 65536);
     }
 
+    // Use this when reading instructions for execution.
+    public uint ReadLeWord32Executable(uint address)
+    {
+        var (offset, bytes) = AccessPage(address, AccessMode.RX);
+        var b0 = bytes[offset];
+        var b1 = bytes[offset + 1];
+        var b2 = bytes[offset + 2];
+        var b3 = bytes[offset + 3];
+        return b0 +
+            (uint)(b1 * 256) +
+            (uint)(b2 * 65536) +
+            (uint)(b3 * 256 * 65536);
+    }
+
     public void WriteLeWord16(uint address, ushort value) => WriteLeWord16(address, (short)value);
 
     public void WriteLeWord16(uint address, short value)

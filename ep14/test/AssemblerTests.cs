@@ -10,37 +10,24 @@ public class AssemblerTests
     private const int op3 = 0b10101;
     private const int op4 = 0b10111;
 
-    private Memory memory = default!;
-
-    [SetUp]
-    public void Setup()
-    {
-        Given_Memory();
-    }
-
     private Assembler Assemble(Action<Assembler> asmClient)
     {
-        var m = new Assembler(memory, new Logger());
+        var m = new Assembler(new Logger());
 
         asmClient(m);
         return m;
     }
 
-    private void Given_Memory()
-    {
-        var bytes = new byte[1024];
-        this.memory = new Memory(bytes);
-    }
-
-
 
     private void RunTest(uint uInstrExpected, Action<Assembler> testBuilder)
     {
-        var bytes = new byte[1024];
-        var memory = new Memory(bytes);
-        var m = new Assembler(memory, new Logger());
+        var m = new Assembler(new Logger());
 
         testBuilder(m);
+
+        var bytes = m.Section.GetAssembledBytes();
+        var memory = new Memory();
+        memory.Allocate(0, bytes, AccessMode.RX);
 
         var uInstr = memory.ReadLeWord32(0);
         if (uInstrExpected != uInstr)

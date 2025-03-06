@@ -4,12 +4,12 @@ public class Relocation
 {
     public Relocation(uint address, RelocationType rtype, string symbolName)
     {
-        Address = address;
+        Offset = address;
         Rtype = rtype;
         SymbolName = symbolName;
     }
 
-    public uint Address { get; }
+    public uint Offset { get; }
     public RelocationType Rtype { get; }
     public string SymbolName { get; }
 }

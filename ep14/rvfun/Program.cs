@@ -1,18 +1,11 @@
-﻿
-using rvfun;
-using Reko.Arch.RiscV;
+﻿using rvfun;
 
-using static rvfun.Mnemonics;
-using Reko.Core.Memory;
-using Reko.Core;
-using System.ComponentModel.DataAnnotations;
-
-var bytes = new byte[2048];
-var mem = new Memory(bytes);
-var x = new int[32];
+const uint BaseAddress = 0x80_0000;
+const uint StackAddress = 0x40_0000;
+const uint StackSize = 0x1000;
 
 var logger = new Logger();
-var m = new Assembler(mem, logger);
+var m = new Assembler(logger);
 
 // int h = open(path, O_RDONLY);
 
@@ -61,11 +54,11 @@ m.label("buffer");
 m.dw(0, 1024/4);
 
 m.label("path");
-m.ds(@"c:\tmp\test.txt");
+m.ds("c:/tmp/test.txt\0");
 
 
-var linker = new Linker(mem, m.Symbols, m.Relocations, logger);
-linker.Relocate();
+var linker = new Linker(m.Section, BaseAddress, m.Symbols, m.Relocations, logger);
+var mem = linker.Relocate();
 
 /*
 m.li(11, 10);
@@ -95,8 +88,9 @@ m.ds("Hello, world!\n\0");
 */
 
 var osemu = new OsEmulator(mem);
-var emu = new Emulator(mem, osemu);
-emu.Registers[2] = 1020;
+mem.Allocate(StackAddress, StackSize, AccessMode.RW);  // Add a stack 
+var emu = new Emulator(mem, osemu, BaseAddress);
+emu.Registers[2] = (int)(StackAddress + StackSize - 4u);   // Make stack ptr point to last work of stack.
 emu.Registers[10] = 10;
 emu.exec();
 var result = emu.Registers[2];

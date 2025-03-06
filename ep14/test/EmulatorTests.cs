@@ -8,28 +8,21 @@ using static rvfun.Mnemonics;
 [TestFixture]
 public class EmulatorTests
 {
-    private Memory memory;
-    private Emulator emu;
-    private OsEmulator osemu;
     private int? exitCode;
+    private int[] registers = default!;
+    private Memory memory = default!;
 
     [SetUp]
     public void Setup()
     {
-        this.memory = new Memory(new byte[1024]);
-        this.osemu = new OsEmulator(memory);
-        this.emu = new Emulator(this.memory, osemu);
         this.exitCode = null;
+        this.registers = new int[32];
     }
 
     [Test]
     public void RiscVEmu_DisallowIfNotExecutable()
     {
         // Disallow execution if the memory area is not executable.
-        this.memory = new Memory();
-        this.memory.Allocate(0, new byte[1024], AccessMode.Read);
-        this.osemu = new OsEmulator(memory);
-        this.emu = new Emulator(this.memory, osemu);
         this.exitCode = null;
 
         try
@@ -37,19 +30,27 @@ public class EmulatorTests
             RunTest(m =>
             {
                 m.addi(0, 0, 0);
-            });
-            Assert.Fail();
+            }, AccessMode.Read);
+            Assert.Fail("Expected an emulator exception b/c the memory is not marked executable.");
         }
         catch (InvalidOperationException)
         {
-
         }
 
     }
-    private void RunTest(Action<Assembler> testBuilder)
+    private void RunTest(Action<Assembler> testBuilder, AccessMode accessMode = AccessMode.RWX)
     {
-        var asm = new Assembler(memory, new Logger());
+        var asm = new Assembler(new Logger());
         testBuilder(asm);
+        this.memory = new Memory();
+        var asmBytes = asm.Section.GetAssembledBytes();
+        var bytes = new byte[2048];
+        Array.Copy(asmBytes, bytes, asmBytes.Length);
+
+        memory.Allocate(0, bytes, accessMode);
+        var osemu = new OsEmulator(this.memory);
+        var emu = new Emulator(this.memory, osemu, this.registers, 0);
+
         exitCode = emu.exec();
     }
 
@@ -60,7 +61,7 @@ public class EmulatorTests
         {
             m.addi(2, 0, 42);
         });
-        Assert.AreEqual(42, emu.Registers[2]);
+        Assert.AreEqual(42, this.registers[2]);
     }
 
     [Test]
@@ -70,7 +71,7 @@ public class EmulatorTests
         {
             m.addi(0, 0, 42);
         });
-        Assert.AreEqual(0, emu.Registers[0]);
+        Assert.AreEqual(0, this.registers[0]);
     }
 
     [Test]
@@ -80,7 +81,7 @@ public class EmulatorTests
         {
             m.addi(2, 0, -2);
         });
-        Assert.AreEqual(-2, emu.Registers[2]);
+        Assert.AreEqual(-2, this.registers[2]);
     }
 
     [Test]
@@ -88,13 +89,13 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 4;
-            emu.Registers[5] = 5;
-            emu.Registers[6] = 6;
+            this.registers[4] = 4;
+            this.registers[5] = 5;
+            this.registers[6] = 6;
 
             m.add(4, 5, 6);
         });
-        Assert.AreEqual(11, emu.Registers[4]);
+        Assert.AreEqual(11, this.registers[4]);
     }
 
     [Test]
@@ -102,13 +103,13 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 4;
-            emu.Registers[5] = 5;
-            emu.Registers[6] = 6;
+            this.registers[4] = 4;
+            this.registers[5] = 5;
+            this.registers[6] = 6;
 
             m.mul(4, 5, 6);
         });
-        Assert.AreEqual(30, emu.Registers[4]);
+        Assert.AreEqual(30, this.registers[4]);
     }
 
     [Test]
@@ -116,12 +117,12 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 4;
-            emu.Registers[5] = 5;
+            this.registers[4] = 4;
+            this.registers[5] = 5;
 
             m.slti(4, 5, 6);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
     [Test]
@@ -129,12 +130,12 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 4;
-            emu.Registers[5] = 5;
+            this.registers[4] = 4;
+            this.registers[5] = 5;
 
             m.slti(4, 5, 5);
         });
-        Assert.AreEqual(0, emu.Registers[4]);
+        Assert.AreEqual(0, this.registers[4]);
     }
 
     [Test]
@@ -142,12 +143,12 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = -4;
-            emu.Registers[5] = 5;
+            this.registers[4] = -4;
+            this.registers[5] = 5;
 
             m.sltiu(4, 5, -2);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
     [Test]
@@ -155,12 +156,12 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = -2;
-            emu.Registers[5] = 5;
+            this.registers[4] = -2;
+            this.registers[5] = 5;
 
             m.slti(4, 5, 5);
         });
-        Assert.AreEqual(0, emu.Registers[4]);
+        Assert.AreEqual(0, this.registers[4]);
     }
 
 
@@ -169,13 +170,14 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            memory.WriteByte(0x8, 0x82);
-            emu.Registers[4] = 0x4;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x4;
+            this.registers[5] = 0x4;
 
             m.lb(4, 5, 0x4);
+            m.dw(0);
+            m.dw(0x82);
         });
-        Assert.AreEqual(unchecked((int)0xFFFFFF82), emu.Registers[4]);
+        Assert.AreEqual(unchecked((int)0xFFFFFF82), this.registers[4]);
     }
 
     [Test]
@@ -183,13 +185,14 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            memory.WriteByte(0x8, 0x82);
-            emu.Registers[4] = 0x4;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x4;
+            this.registers[5] = 0x4;
 
             m.lbu(4, 5, 0x4);
+            m.dw(0);
+            m.dw(0x82);
         });
-        Assert.AreEqual((int)0x00000082, emu.Registers[4]);
+        Assert.AreEqual((int)0x00000082, this.registers[4]);
     }
 
     [Test]
@@ -197,14 +200,14 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            memory.WriteByte(0x8, 0x65);
-            memory.WriteByte(0x9, 0x87);
-            emu.Registers[4] = 0x4;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x4;
+            this.registers[5] = 0x4;
 
             m.lh(4, 5, 0x4);
+            m.dw(0);
+            m.dw(0x00008765);
         });
-        Assert.AreEqual(unchecked((int)0xFFFF8765), emu.Registers[4]);
+        Assert.AreEqual(unchecked((int)0xFFFF8765), this.registers[4]);
     }
 
 
@@ -213,14 +216,14 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            memory.WriteByte(0x8, 0x65);
-            memory.WriteByte(0x9, 0x87);
-            emu.Registers[4] = 0x4;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x4;
+            this.registers[5] = 0x4;
 
             m.lhu(4, 5, 0x4);
+            m.dw(0);
+            m.dw(0x00008765);
         });
-        Assert.AreEqual((int)0x00008765, emu.Registers[4]);
+        Assert.AreEqual((int)0x00008765, this.registers[4]);
     }
 
     [Test]
@@ -228,16 +231,14 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            memory.WriteByte(0x8, 0x78);
-            memory.WriteByte(0x9, 0x56);
-            memory.WriteByte(0xA, 0x34);
-            memory.WriteByte(0xB, 0x12);
-            emu.Registers[4] = 0x4;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x4;
+            this.registers[5] = 0x4;
 
             m.lw(4, 5, 0x4);
+            m.dw(0);
+            m.dw(0x12345678);
         });
-        Assert.AreEqual((int)0x12345678, emu.Registers[4]);
+        Assert.AreEqual((int)0x12345678, this.registers[4]);
     }
 
     [Test]
@@ -245,10 +246,11 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 0x12345678;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x12345678;
+            this.registers[5] = 0x4;
 
             m.sb(4, 5, 0x124);
+            m.dw(0, 0x128);
         });
         Assert.AreEqual(0x78, memory.ReadLeWord32(0x128));
     }
@@ -258,10 +260,11 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 0x12345678;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x12345678;
+            this.registers[5] = 0x4;
 
             m.sh(4, 5, 0x124);
+            m.dw(0, 0x128);
         });
         Assert.AreEqual(0x5678, memory.ReadLeWord32(0x128));
     }
@@ -271,10 +274,11 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[4] = 0x12345678;
-            emu.Registers[5] = 0x4;
+            this.registers[4] = 0x12345678;
+            this.registers[5] = 0x4;
 
             m.sw(4, 5, 0x124);
+            m.dw(0, 0x128);
         });
         Assert.AreEqual(0x12345678, memory.ReadLeWord32(0x128));
     }
@@ -289,7 +293,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
     [Test]
@@ -302,7 +306,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
     [Test]
@@ -315,7 +319,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
     [Test]
@@ -323,15 +327,15 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[1] = 0x8;
-            emu.Registers[10] = 1;
+            this.registers[1] = 0x8;
+            this.registers[10] = 1;
 
             m.jalr(0, 1, 0);
             m.addi(10, 0, 0x42);
 
             m.addi(11, 10, 0);
         });
-        Assert.AreEqual(1, emu.Registers[11]);
+        Assert.AreEqual(1, this.registers[11]);
     }
 
     [Test]
@@ -339,13 +343,13 @@ public class EmulatorTests
     {
         RunTest(m =>
         {
-            emu.Registers[17] = 0;
-            emu.Registers[10] = 1;
+            this.registers[17] = 0;
+            this.registers[10] = 1;
 
             m.ecall(0, 0, 0);
             m.addi(10, 0, 0x42);
         });
-        Assert.AreEqual(1, emu.Registers[10]);
+        Assert.AreEqual(1, this.registers[10]);
         Assert.AreEqual(1, exitCode!.Value);
     }
 
@@ -357,7 +361,7 @@ public class EmulatorTests
             m.lui(1, 0x12345, 0);
             m.addi(1, 1, 0x678);
         });
-        Assert.AreEqual(0x12345678, emu.Registers[1]);
+        Assert.AreEqual(0x12345678, this.registers[1]);
     }
 
     [Test]
@@ -368,7 +372,7 @@ public class EmulatorTests
             m.auipc(1, 0x12345);
             m.addi(1, 1, 0x678);
         });
-        Assert.AreEqual(0x12345678, emu.Registers[1]);
+        Assert.AreEqual(0x12345678, this.registers[1]);
     }
 
     [Test]
@@ -381,7 +385,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(0, emu.Registers[4]);
+        Assert.AreEqual(0, this.registers[4]);
     }
 
     [Test]
@@ -394,7 +398,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(-2, emu.Registers[4]);
+        Assert.AreEqual(-2, this.registers[4]);
     }
 
 
@@ -412,7 +416,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
 
@@ -427,7 +431,7 @@ public class EmulatorTests
             m.addi(4, 0, -1);
             m.addi(0, 0, 0);
         });
-        Assert.AreEqual(1, emu.Registers[4]);
+        Assert.AreEqual(1, this.registers[4]);
     }
 
 
@@ -437,10 +441,10 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    emu.Registers[4] = 0x55555555;
+                    this.registers[4] = 0x55555555;
                     m.xori(5, 4, -1);
                 });
-        Assert.AreEqual(unchecked((int)0xAAAAAAAA), emu.Registers[5]);
+        Assert.AreEqual(unchecked((int)0xAAAAAAAA), this.registers[5]);
     }
 
 
@@ -449,10 +453,10 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    emu.Registers[4] = 0x55555555;
+                    this.registers[4] = 0x55555555;
                     m.ori(5, 4, -1);
                 });
-        Assert.AreEqual(unchecked((int)0xFFFFFFFF), emu.Registers[5]);
+        Assert.AreEqual(unchecked((int)0xFFFFFFFF), this.registers[5]);
     }
 
 
@@ -461,10 +465,10 @@ public class EmulatorTests
     {
         RunTest(m =>
                 {
-                    emu.Registers[4] = 0x55555555;
+                    this.registers[4] = 0x55555555;
                     m.andi(5, 4, 0xF);
                 });
-        Assert.AreEqual(5, emu.Registers[5]);
+        Assert.AreEqual(5, this.registers[5]);
     }
 
 
@@ -476,7 +480,7 @@ public class EmulatorTests
                     m.addi(4, 0, 2);           // 0000010
                     m.slli(5, 4, 1);
                 });
-        Assert.AreEqual(4, emu.Registers[5]);
+        Assert.AreEqual(4, this.registers[5]);
     }
 
 
@@ -488,7 +492,7 @@ public class EmulatorTests
                     m.addi(4, 0, 4);           // 0000100
                     m.srli(5, 4, 1);
                 });
-        Assert.AreEqual(2, emu.Registers[5]);
+        Assert.AreEqual(2, this.registers[5]);
     }
 
 
@@ -501,7 +505,7 @@ public class EmulatorTests
 
                     m.srai(5, 4, 4);
                 });
-        Assert.AreEqual(-1, emu.Registers[5]);
+        Assert.AreEqual(-1, this.registers[5]);
     }
 
 
@@ -515,7 +519,7 @@ public class EmulatorTests
                     m.addi(5, 0, 3);
                     m.sub(3, 4, 5);
                 });
-        Assert.AreEqual(-1, emu.Registers[3]);
+        Assert.AreEqual(-1, this.registers[3]);
     }
 
 
@@ -528,7 +532,7 @@ public class EmulatorTests
                     m.addi(3, 0, 3);
                     m.sll(5, 4, 3);
                 });
-        Assert.AreEqual(0x10, emu.Registers[5]);
+        Assert.AreEqual(0x10, this.registers[5]);
     }
 
 
@@ -542,7 +546,7 @@ public class EmulatorTests
                     m.addi(5, 0, reg2);
                     m.slt(6, 4, 5);
                 });
-        Assert.AreEqual(result, emu.Registers[6]);
+        Assert.AreEqual(result, this.registers[6]);
     }
 
 
@@ -556,7 +560,7 @@ public class EmulatorTests
                     m.addi(5, 0, (int)reg2);
                     m.sltu(6, 4, 5);
                 });
-        Assert.AreEqual(result, emu.Registers[6]);
+        Assert.AreEqual(result, this.registers[6]);
     }
 
 
@@ -569,7 +573,7 @@ public class EmulatorTests
                     m.addi(5, 0, 0xFFF);
                     m.xor(6, 4, 5);
                 });
-        Assert.AreEqual(0x555, emu.Registers[6]);
+        Assert.AreEqual(0x555, this.registers[6]);
     }
 
 
@@ -582,7 +586,7 @@ public class EmulatorTests
                     m.addi(5, 0, 1);
                     m.srl(6, 4, 5);
                 });
-        Assert.AreEqual(3, emu.Registers[6]);
+        Assert.AreEqual(3, this.registers[6]);
     }
 
 
@@ -595,7 +599,7 @@ public class EmulatorTests
                     m.addi(5, 0, 10);
                     m.sra(6, 4, 5);
                 });
-        Assert.AreEqual(-1, emu.Registers[6]);
+        Assert.AreEqual(-1, this.registers[6]);
     }
 
 
@@ -608,7 +612,7 @@ public class EmulatorTests
                     m.addi(5, 0, 0x0F0);
                     m.or(6, 4, 5);
                 });
-        Assert.AreEqual(0x2FA, emu.Registers[6]);
+        Assert.AreEqual(0x2FA, this.registers[6]);
     }
 
 
@@ -621,7 +625,7 @@ public class EmulatorTests
                     m.addi(5, 0, 0x0F0);
                     m.and(6, 4, 5);
                 });
-        Assert.AreEqual(0x0A0, emu.Registers[6]);
+        Assert.AreEqual(0x0A0, this.registers[6]);
     }
 
 
