@@ -72,7 +72,7 @@ public class Emulator
             if (instr == 0)
                 break;
             ++this.instrsExecuted;
-            if (this.instrsExecuted > 200)
+            if (this.instrsExecuted > 2000)
             {
                 Console.Error.WriteLine("Watchdog timer: expired");
                 return -1;
@@ -88,7 +88,7 @@ public class Emulator
 
     private uint exec(uint uInstr)
     {
-        //Console.WriteLine("{0:X8}: {1}", iptr, Convert.ToString(uInstr, 2).PadLeft(32, '0'));
+        // Console.WriteLine("{0:X8}: {1}", iptr, Convert.ToString(uInstr, 2).PadLeft(32, '0'));
         var iptrNext = iptr + 4;
         var opcode = bfOpcode.ExtractUnsigned(uInstr);
         uint funct3;

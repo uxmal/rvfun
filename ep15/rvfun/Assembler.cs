@@ -172,7 +172,7 @@ public class Assembler
                 asmI(0b000_00000_1110011, 0, 0, 1);
     }
 
-            public void ecall(int dst, int src1, int src2) {
+            public void ecall() {
                 asmI(0b000_00000_1110011, 0, 0, 0);
     }
 

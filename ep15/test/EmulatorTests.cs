@@ -346,7 +346,7 @@ public class EmulatorTests
             this.registers[17] = 0;
             this.registers[10] = 1;
 
-            m.ecall(0, 0, 0);
+            m.ecall();
             m.addi(10, 0, 0x42);
         });
         Assert.AreEqual(1, this.registers[10]);

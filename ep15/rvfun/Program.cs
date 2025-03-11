@@ -7,54 +7,84 @@ const uint StackSize = 0x1000;
 var logger = new Logger();
 var m = new Assembler(logger);
 
-// int h = open(path, O_RDONLY);
+m.addi(2, 2, -16);      // make space for 4 words
+m.sw(10, 2, 0);         // store argc
+m.sw(11, 2, 4);         // store argv
+m.sw(0, 2, 8);          // store i
+m.sw(1, 2, 12);         // store return address.
 
-m.li(17, OsEmulator.SYSCALL_OPEN);
-m.auipc(10, m.pcrel_hi("path"));
+m.j("main_looptest");
+
+m.label("main_loopbody");
+m.lw(13, 2, 8);         // get i
+m.beq(13, 0, "main_write_arg"); // only write space if i != 0
+
+m.auipc(10, m.pcrel_hi("space"));
 m.addi(10, 10, m.pcrel_lo(-4));
-m.li(11, OsEmulator.O_RDONLY);
-m.ecall(0, 0, 0);           // handle in x10 register
-m.addi(8, 10, 0);
+m.jal(1, "putstring");
 
-//for (;;) {
-m.label("loop_top");
+m.label("main_write_arg");
+m.lw(10, 2, 4);         // x10 = argv
+m.slli(13, 13, 2);      // 13 = i*4
+m.add(10, 10, 13);      // x10 = argv + i*4
+m.lw(10, 10, 0);        // x10 = argv[i]
+m.jal(1, "putstring");
 
-//int cb = read(h, buffer, sizeof(Buffer));
-m.li(17, OsEmulator.SYSCALL_READ);
-m.add(10, 8, 0);
-m.auipc(11, m.pcrel_hi("buffer"));
-m.addi(11, 11, m.pcrel_lo(-4));
-m.li(12, 1024);
-m.ecall(0, 0, 0);           // number of bytes read in x10 register.
+m.addi(13, 13, 1);      // move to next argument
+m.sw(13, 2, 8);         // save i
 
-//    if (0 >= cb)
-//        break;
-m.bge(0, 10, "loop_exit");
+m.label("main_looptest");
+m.lw(13, 2, 8);     // x13 = i
+m.lw(10, 2, 0);     // x10 = argc
+m.blt(13, 10, "main_loopbody");
 
-//  write(1, buffer, cb);
-m.li(17, OsEmulator.SYSCALL_WRITE);
-m.addi(12, 10, 0);
-m.li(10, 1);
-m.auipc(11, m.pcrel_hi("buffer"));
-m.addi(11, 11, m.pcrel_lo(-4));
-m.ecall(0, 0, 0);           // number of bytes written in x10 register.
+m.auipc(10, m.pcrel_hi("nl"));
+m.addi(10, 10, m.pcrel_lo(-4));
+m.jal(1, "putstring");
 
-m.j("loop_top");
-
-m.label("loop_exit");
-m.li(17, OsEmulator.SYSCALL_CLOSE);
-m.add(10, 8, 0);
-m.ecall(0, 0, 0);
-
-m.li(17, OsEmulator.SYSCALL_EXIT);
 m.li(10, 0);
-m.ecall(0, 0, 0);
+m.li(17, OsEmulator.SYSCALL_EXIT);
+m.ecall();
+// m.lw(1, 2, 12);         // restore return address.
+// m.addi(2, 2, 16);      // restore stack ptr
+// m.jalr(0, 1, 0);
 
-m.label("buffer");
-m.dw(0, 1024/4);
+// putstring ////////////////
+m.label("putstring");
+m.addi(2, 2, -8);       // allocate space for two words
+m.sw(1, 2, 0);          // store return address
+m.sw(10, 2, 4);         // store initial value of the string ptr.
 
-m.label("path");
-m.ds("c:/tmp/test.txt\0");
+m.jal(1, "strlen");
+m.addi(12, 10, 0);      // Copy x10 into x12
+m.lw(11, 2, 4);         // reload the string ptr
+m.li(10, 1);            // std output in x10
+m.li(17, OsEmulator.SYSCALL_WRITE);
+
+m.ecall();
+
+m.lw(1, 2, 0);          // retore link register
+m.add(2, 2, 8);         // restore stack ptr
+m.jalr(0, 1, 0);
+
+// strlen //////////////
+m.label("strlen");
+m.addi(11, 10, 0);
+m.j("strlen_test");
+
+m.label("strlen_body");
+m.addi(10, 10, 1);
+
+m.label("strlen_test");
+m.lbu(12, 10, 0);       // read a byte pointed to by x0 into x12
+m.bne(12, 0, "strlen_body");
+
+m.sub(10, 10, 11);
+m.jalr(0, 1, 0);
+
+// data
+m.label("space"); m.ds(" \0");
+m.label("nl"); m.ds("\r\n\0");
 
 
 var linker = new Linker(m.Section, BaseAddress, m.Symbols, m.Relocations, logger);
