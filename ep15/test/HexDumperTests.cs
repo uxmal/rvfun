@@ -33,8 +33,7 @@ public class HexDumperTests
         var dumper = new HexDumper(memory);
         dumper.Dump(MemoryAddress + 2, 0xC, sw);
         var sActual = sw.ToString();
-        var sExpected = "00100002       42 43 44 45 46 47 48 49 4A 4B 4C 4D         BCDEFGHIJKLM  " + Environment.NewLine;
+        var sExpected = "00100000       42 43 44 45 46 47 48 49 4A 4B 4C 4D         BCDEFGHIJKLM  " + Environment.NewLine;
         Assert.That(sActual, Is.EqualTo(sExpected));
     }
-
 }

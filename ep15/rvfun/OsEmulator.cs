@@ -1,3 +1,4 @@
+using System.Text;
 using rvfun;
 
 public class OsEmulator
@@ -165,5 +166,46 @@ public class OsEmulator
             return false;
         var stm = handles[handle];
         return stm != null;
+    }
+
+    internal (uint stackPtr, uint argPtr, int argCount) CreateStackSegment(uint stackAddress, uint stackSize, string[] args)
+    {
+        mem.Allocate(stackAddress, stackSize, AccessMode.RW);  // Add a stack 
+        var argAddresses = StoreArguments(stackAddress + stackSize, args);
+        var argPtr = StoreAddressVector(argAddresses);
+        var stackPtr = argPtr - 4u;
+        return (stackPtr, argPtr, args.Length);
+    }
+
+    private uint[] StoreArguments(uint addr, string[] args)
+    {
+        var result = new uint[args.Length];
+        for (int i = args.Length - 1; i >= 0; --i)
+        {
+            var s = args[i];
+            var cb = Encoding.UTF8.GetByteCount(s) + 1;
+            var addrStr = (uint)(addr - cb);
+            result[i] = (uint)addrStr;
+            var span = mem.GetSpan((int)addrStr, cb, AccessMode.RW);
+            var bytes = Encoding.UTF8.GetBytes(s);
+            bytes.AsSpan().CopyTo(span);
+            mem.WriteByte((uint)(addrStr + cb - 1), 0);
+            addr = addrStr;
+        }
+        return result;
+    }
+
+     // [ptr1] [ptr2][null]   ... [arg1] [arg2]
+    private uint StoreAddressVector(uint [] argAddresses)
+    {
+        var alignedAddress = argAddresses[0] & ~0x3u;
+        var addrVector = alignedAddress - (uint)(argAddresses.Length + 1) * 4u;
+        var p = addrVector;
+        for (int i = 0; i < argAddresses.Length; ++i, p += 4u)
+        {
+            var a = argAddresses[i];
+            mem.WriteLeWord32(p, a);
+        }
+        return addrVector;
     }
 }

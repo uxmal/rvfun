@@ -14,16 +14,16 @@ public class HexDumper
         this.memory = memory;
     }
 
-    public void Dump(uint address, int length, TextWriter w)
+    public void Dump(uint addressBegin, int length, TextWriter w)
     {
-        var addrEnd = address+ length;
-        for (uint addrLine = (address & ~0xFu); addrLine < addrEnd; addrLine += LineLength)
+        var addrEnd = addressBegin+ length;
+        for (uint addrLine = (addressBegin & ~0xFu); addrLine < addrEnd; addrLine += LineLength)
         {
-            w.Write($"{address:X8}");
+            w.Write($"{addrLine:X8}");
             for (uint i = 0; i < LineLength; ++i)
             {
                 var a = addrLine + i;
-                if (a < address || a >= addrEnd)
+                if (a < addressBegin || a >= addrEnd)
                 {
                     w.Write("   ");
                 }
@@ -37,7 +37,7 @@ public class HexDumper
             for (uint i = 0; i < LineLength; ++i)
             {
                 var a = addrLine + i;
-                if (a < address || a >= addrEnd)
+                if (a < addressBegin || a >= addrEnd)
                 {   
                     w.Write(' ');
                 }

@@ -86,12 +86,18 @@ m.li(17,  OsEmulator.SYSCALL_EXIT);    // select the 'exit' system call
 m.ecall(0, 0, 0);
 m.ds("Hello, world!\n\0");
 */
+args = args.Length == 0
+    ? ["hello", "world!"]
+    : args;
 
 var osemu = new OsEmulator(mem);
-mem.Allocate(StackAddress, StackSize, AccessMode.RW);  // Add a stack 
+var (stackPtr, argPtr, argCount) = osemu.CreateStackSegment(StackAddress, StackSize, args);
 var emu = new Emulator(mem, osemu, BaseAddress);
-emu.Registers[2] = (int)(StackAddress + StackSize - 4u);   // Make stack ptr point to last work of stack.
-emu.Registers[10] = 10;
+var dumper = new HexDumper(mem);
+dumper.Dump(stackPtr, (int)((StackAddress + StackSize) - stackPtr), Console.Out); 
+emu.Registers[2] = (int)stackPtr;
+emu.Registers[10] = argCount;
+emu.Registers[11] = (int)argPtr;
 emu.exec();
 var result = emu.Registers[2];
 
