@@ -12,6 +12,7 @@ public class TextAssembler
     private int linenumber;
     private bool valid;
     private int iBeginPos;
+    private Token previousToken;
 
     public TextAssembler(byte[] bytes)
     {
@@ -19,11 +20,64 @@ public class TextAssembler
         this.iPos = 0;
         this.linenumber = 1;
         this.valid = true;
+        this.Symbols = [];
+        this.previousToken = Token.EOF;
+        this.Section = new AssemblerSection();
     }
 
     public int CurrentValue { get; private set; }
+    public Dictionary<string, Symbol> Symbols {get;}
+    public AssemblerSection Section {get;}
+
+    public void AssembleLine()
+    {
+        var token = GetToken();
+        if (token == Token.Word)
+        {
+            var w = this.GetTokenString();
+            if (PeekAndDiscard(Token.Colon))
+            {
+                var symbol = new Symbol(w, Section.Position);
+                AddSymbol(w, symbol);
+            }
+        }
+    }
+
+    private void AddSymbol(string name, Symbol symbol)
+    {
+        if (Symbols.TryAdd(name, symbol))
+            return;
+        Console.WriteLine($"error({linenumber}): Duplicate symbol '{name}'.");
+        this.valid = false;
+    }
+
+    private bool PeekAndDiscard(Token expectedToken)
+    {
+        if (PeekToken() != expectedToken)
+            return false;
+        GetToken();
+        return true;
+    }
+
+    public Token PeekToken()
+    {
+        if (previousToken == Token.EOF)
+        {
+            this.previousToken = ReadToken();
+        }
+        return previousToken;
+    }
 
     public Token GetToken()
+    {
+        if (previousToken == Token.EOF)
+            return ReadToken();
+        var result = previousToken;
+        previousToken = Token.EOF;
+        return result;
+    }
+
+    private Token ReadToken()
     {
         var state = State.Start;
         for (; ; )
@@ -49,12 +103,21 @@ public class TextAssembler
                         case ',':   // Ignore commas
                         case '\t': // Ignore tabs.
                             continue;
+                        case '\n':
+                            ++linenumber;
+                            return Token.EndLine;
+                        case '\r':
+                            state = State.Cr;
+                            continue;
                         case ':':
                             return Token.Colon;
                         case '(':
                             return Token.LParen;
                         case ')':
                             return Token.RParen;
+                        case ';':
+                            state = State.Comment;
+                            continue;
                         case '0':
                         case '1':
                         case '2':
@@ -69,7 +132,7 @@ public class TextAssembler
                             state = State.Number;
                             continue;
                         default:
-                            if (char.IsAsciiLetter((char)c) || c == '_')
+                            if (char.IsAsciiLetter((char)c) || c == '_' || c == '.' || c == '%')
                             {
                                 iBeginPos = iPos - 1;
                                 state = State.Word;
@@ -219,6 +282,33 @@ public class TextAssembler
                             --iPos;
                             return Token.Word;
                     }
+                case State.Cr:
+                    switch (c)
+                    {
+                        case -1: 
+                            return Token.EndLine;
+                        case '\n':
+                            ++linenumber;
+                            return Token.EndLine;
+                        default:
+                            ++linenumber;
+                            --iPos;
+                            return Token.EndLine;
+                    }
+                case State.Comment:
+                    switch(c)
+                    {
+                        case -1:
+                            return Token.EndLine;
+                        case '\n':
+                            ++linenumber;
+                            return Token.EndLine;
+                        case '\r':
+                            state = State.Cr;
+                            continue;
+                        default:
+                            continue;
+                    }
                 }
         }
     }
@@ -243,6 +333,8 @@ public class TextAssembler
         HexNumberStart,
         HexNumber,
         Word,
+        Cr,
+        Comment,
     }
 }
 
@@ -254,4 +346,5 @@ public enum Token
     LParen,
     RParen,
     Word,
+    EndLine,
 }
