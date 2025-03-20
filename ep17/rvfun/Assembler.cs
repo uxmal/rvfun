@@ -363,6 +363,16 @@ public class Assembler
                 asmS(0b010_00000_0100011, dst, src1, src2);
     }
 
+                //zawrs standard/extension/
+            public void wrs_nto() {
+                asmR(0b0000000_00000_00000_000_00000_1110011, 0, 0, 0b01101);
+             }
+
+            public void wrs_sto() {
+                asmR(0b0000000_00000_00000_000_00000_1110011, 0, 0, 0b11101);
+            }
+
+
             public void xor(int dst, int src1, int src2) {
                 asmR(0b0000000_0000000000_100_00000_0110011, dst, src1, src2);
     }
@@ -691,16 +701,16 @@ public class Assembler
             public void fsqrt_h(int dst, int src1, int rm) {
                         asmF(0b0101110_00000_00000_000_00000_1010011, dst, src1, rm);
 }
-            public void fsgnj_h(int dst, int src1, int src2, int src3, int rm) {
+            public void fsgnj_h(int dst, int src1, int src2) {
                         asmR(0b0010010_00000_00000_000_00000_1010011, dst, src1, src2);
 }
-            public void fsgnjn_h(int dst, int src1, int src2, int src3, int rm) {
+            public void fsgnjn_h(int dst, int src1, int src2) {
                         asmR(0b0010010_00000_00000_001_00000_1010011, dst, src1, src2);
 }
-            public void fsgnjx_h(int dst, int src1, int src2, int src3, int rm) {
+            public void fsgnjx_h(int dst, int src1, int src2) {
                         asmR(0b0010010_00000_00000_010_00000_1010011, dst, src1, src2);
 }
-            public void fmin_h(int dst, int src1, int src2, int src3, int rm) {
+            public void fmin_h(int dst, int src1, int src2) {
                         asmR(0b0010110_00000_00000_000_00000_1010011, dst, src1, src2);
 }
             public void fmax_h(int dst, int src1, int src2) {
@@ -770,7 +780,7 @@ public class Assembler
 
 
 
-
+    //$TODO: this method doesn't seem to be used anywhere anymore. Delete it?
     public void asm(Mnemonics operation, int dst, int src1, int src2, int src3 = 0, int rm = 0)
     {
         switch (operation)

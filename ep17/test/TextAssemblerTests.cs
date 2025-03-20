@@ -34,7 +34,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_Colon()
+    public void Tasm_Colon()
     {
         var tasm = Given_TextAssembler(" : ");
         var token = tasm.GetToken();
@@ -42,7 +42,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_Parens()
+    public void Tasm_Parens()
     {
         var tasm = Given_TextAssembler(",() ");
         var token = tasm.GetToken();
@@ -52,7 +52,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_BinaryNumber()
+    public void Tasm_BinaryNumber()
     {
         var tasm = Given_TextAssembler(" 0b1 ");
         var token = tasm.GetToken();
@@ -61,7 +61,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_LongBinaryNumber()
+    public void Tasm_LongBinaryNumber()
     {
         var tasm = Given_TextAssembler(" 0b1010 ");
         var token = tasm.GetToken();
@@ -70,7 +70,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_HexNumber()
+    public void Tasm_HexNumber()
     {
         var tasm = Given_TextAssembler(" 0xf ");
         var token = tasm.GetToken();
@@ -80,7 +80,7 @@ public class TextAssemblerTests
 
 
     [Test]
-    public void Task_LongHexNumber()
+    public void Tasm_LongHexNumber()
     {
         var tasm = Given_TextAssembler(" 0xff ");
         var token = tasm.GetToken();
@@ -89,7 +89,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_Word()
+    public void Tasm_Word()
     {
         var tasm = Given_TextAssembler(" b ");
         var token = tasm.GetToken();
@@ -98,7 +98,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_Word_Underscore()
+    public void Tasm_Word_Underscore()
     {
         var tasm = Given_TextAssembler(" _ ");
         var token = tasm.GetToken();
@@ -107,7 +107,7 @@ public class TextAssemblerTests
     }
 
     [Test]
-    public void Task_Word_UnderscoreDigit()
+    public void Tasm_Word_UnderscoreDigit()
     {
         var tasm = Given_TextAssembler(" _2 ");
         var token = tasm.GetToken();

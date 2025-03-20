@@ -633,10 +633,12 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_fence_tso()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(fence_tso, -1, -1, -1);
+               m.fence_tso(-1, -1, -1);
            });
+           */
     }
 
 
@@ -644,12 +646,14 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_pause()
     {
+        /*
         RunTest(m =>
                 {
 
-                    m.asm(pause, -1, -1, -1);
+                    m.pause(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
+        */
     }
 
 
@@ -658,11 +662,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_ebreak()
     {
+        /*
         RunTest(m =>
                 {
 
-                    m.ebreak(-1, -1, -1);
+                    m.ebreak();
                 });
+                */
         Assert.Fail("Not implemented");
     }
 
@@ -831,10 +837,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_fence_i()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(fence_i, -1, -1, -1);
+               m.fence_i(-1, -1, -1);
            });
+           */
+           Assert.Fail("Not implemented");
     }
 
 
@@ -1084,10 +1093,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_lr_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(lr_w, -1, -1, -1);
+               m.lr_w(-1, -1, -1);
            });
+           */
+           Assert.Fail("Not implemented");
     }
 
 
@@ -1095,10 +1107,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_sc_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(sc_w, -1, -1, -1);
+               m.sc_w(-1, -1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1106,10 +1121,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amosw_p_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoswap_w, -1, -1, -1);
+               m.amoswap_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1117,10 +1135,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoadd_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoadd_w, -1, -1, -1);
+               m.amoadd_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1128,10 +1149,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoxor_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoxor_w, -1, -1, -1);
+               m.amoxor_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1139,10 +1163,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoand_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoand_w, -1, -1, -1);
+               m.amoand_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1150,10 +1177,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoor_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoor_w, -1, -1, -1);
+               m.amoor_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1161,10 +1191,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomin_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amomin_w, -1, -1, -1);
+               m.amomin_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1172,10 +1205,12 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomax_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amomax_w, -1, -1, -1);
-           });
+               m.amomax_w(-1, -1, -1);
+           });*/
+           Assert.Fail();
     }
 
 
@@ -1183,10 +1218,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amominu_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amominu_w, -1, -1, -1);
+               m.amominu_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1194,10 +1232,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomaxu_w()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amomaxu_w, -1, -1, -1);
+               m.amomaxu_w(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1205,10 +1246,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_lr_d()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(lr_d, -1, -1, -1);
+               m.lr_d(-1, -1, -1);
            });
+           */ 
+           Assert.Fail();
     }
 
 
@@ -1216,10 +1260,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_sc_d()
     {
-        RunTest(m =>
-           {
-               m.asm(sc_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.sc_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1227,10 +1272,13 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoswap_d()
     {
+        /*
         RunTest(m =>
            {
-               m.asm(amoswap_d, -1, -1, -1);
+               m.amoswap_d(-1, -1, -1);
            });
+           */
+           Assert.Fail();
     }
 
 
@@ -1238,20 +1286,22 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoadd_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amoadd_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amoadd_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
     [Test]
     [Ignore("nyi")]
     public void RiscVEmu_amoand_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amoand_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amoand_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1259,10 +1309,12 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoxor_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amoxor_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amoxor_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
+
     }
 
 
@@ -1273,10 +1325,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amoor_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amoor_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amoor_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1284,10 +1337,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomin_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amomin_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amomin_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1295,10 +1349,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomax_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amomax_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amomax_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1306,10 +1361,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amominu_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amominu_d, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.amominu_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1317,10 +1373,12 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_amomaxu_d()
     {
-        RunTest(m =>
-           {
-               m.asm(amomaxu_d, -1, -1, -1);
-           });
+
+        // RunTest(m =>
+        //    {
+        //        m.amomaxu_d(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -1332,7 +1390,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(flw, -1, -1, -1);
+                    m.flw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1345,7 +1403,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(fsw, -1, -1, -1);
+                    m.fsw(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1357,7 +1415,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmadd_s, -1, -1, -1);
+               m.fmadd_s(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1368,7 +1426,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmsub_s, -1, -1, -1);
+               m.fmsub_s(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1379,7 +1437,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmsub_s, -1, -1, -1);
+               m.fnmsub_s(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1390,7 +1448,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmadd_s, -1, -1, -1);
+               m.fnmadd_s(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1401,7 +1459,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fadd_s, -1, -1, -1);
+               m.fadd_s(-1, -1, -1, -1);
            });
     }
 
@@ -1412,7 +1470,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsub_s, -1, -1, -1);
+               m.fsub_s(-1, -1, -1, -1);
            });
     }
 
@@ -1423,7 +1481,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmul_s, -1, -1, -1);
+               m.fmul_s(-1, -1, -1, -1);
            });
     }
 
@@ -1434,7 +1492,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fdiv_s, -1, -1, -1);
+               m.fdiv_s(-1, -1, -1, -1);
            });
     }
 
@@ -1445,7 +1503,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsqrt_s, -1, -1, -1);
+               m.fsqrt_s(-1, -1, -1 ,-1);
            });
     }
 
@@ -1456,7 +1514,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnj_s, -1, -1, -1);
+               m.fsgnj_s(-1, -1, -1);
            });
     }
 
@@ -1467,7 +1525,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjn_s, -1, -1, -1);
+               m.fsgnjn_s(-1, -1, -1);
            });
     }
 
@@ -1478,7 +1536,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjx_s, -1, -1, -1);
+               m.fsgnjx_s(-1, -1, -1);
            });
     }
 
@@ -1489,7 +1547,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmin_s, -1, -1, -1);
+               m.fmin_s(-1, -1, -1);
            });
     }
 
@@ -1500,7 +1558,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmax_s, -1, -1, -1);
+               m.fmax_s(-1, -1, -1);
            });
     }
 
@@ -1511,7 +1569,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_w_s, -1, -1, -1);
+               m.fcvt_w_s(-1, -1, -1, -1);
            });
     }
 
@@ -1522,7 +1580,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_wu_s, -1, -1, -1);
+               m.fcvt_wu_s(-1, -1, -1, -1);
            });
     }
 
@@ -1533,7 +1591,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_x_w, -1, -1, -1);
+               m.fmv_x_w(-1, -1, -1);
            });
     }
 
@@ -1544,7 +1602,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(feq_s, -1, -1, -1);
+               m.feq_s(-1, -1, -1);
            });
     }
 
@@ -1555,7 +1613,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(flt_s, -1, -1, -1);
+               m.flt_s(-1, -1, -1);
            });
     }
 
@@ -1566,7 +1624,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fle_s, -1, -1, -1);
+               m.fle_s(-1, -1, -1);
            });
     }
 
@@ -1577,7 +1635,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fclass_s, -1, -1, -1);
+               m.fclass_s(-1, -1, -1);
            });
     }
 
@@ -1588,7 +1646,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_w, -1, -1, -1);
+               m.fcvt_s_w(-1, -1, -1, -1);
            });
     }
 
@@ -1599,7 +1657,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_wu, -1, -1, -1);
+               m.fcvt_s_wu(-1, -1, -1, -1);
            });
     }
 
@@ -1610,7 +1668,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_w_x, -1, -1, -1);
+               m.fmv_w_x(-1, -1, -1);
            });
     }
 
@@ -1622,7 +1680,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_l_s, -1, -1, -1);
+               m.fcvt_l_s(-1, -1, -1, -1);
            });
     }
 
@@ -1633,7 +1691,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_lu_s, -1, -1, -1);
+               m.fcvt_lu_s(-1, -1, -1, -1);
            });
     }
 
@@ -1644,7 +1702,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_l, -1, -1, -1);
+               m.fcvt_s_l(-1, -1, -1, -1);
            });
     }
 
@@ -1655,7 +1713,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_lu, -1, -1, -1);
+               m.fcvt_s_lu(-1, -1, -1, -1);
            });
     }
 
@@ -1671,7 +1729,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(fld, -1, -1, -1);
+                    m.fld(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1684,7 +1742,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(fsd, -1, -1, -1);
+                    m.fsd(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -1696,7 +1754,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmadd_d, -1, -1, -1);
+               m.fmadd_d(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1707,7 +1765,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmsub_d, -1, -1, -1);
+               m.fmsub_d(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1718,7 +1776,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmsub_d, -1, -1, -1);
+               m.fnmsub_d(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1729,7 +1787,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmadd_d, -1, -1, -1);
+               m.fnmadd_d(-1, -1, -1, -1, -1);
            });
     }
 
@@ -1740,7 +1798,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fadd_d, -1, -1, -1);
+               m.fadd_d(-1, -1, -1, -1);
            });
     }
 
@@ -1751,7 +1809,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsub_d, -1, -1, -1);
+               m.fsub_d(-1, -1, -1, -1);
            });
     }
 
@@ -1762,7 +1820,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmul_d, -1, -1, -1);
+               m.fmul_d(-1, -1, -1, -1);
            });
     }
 
@@ -1773,7 +1831,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fdiv_d, -1, -1, -1);
+               m.fdiv_d(-1, -1, -1, -1);
            });
     }
 
@@ -1784,7 +1842,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsqrt_d, -1, -1, -1);
+               m.fsqrt_d(-1, -1, -1, -1);
            });
     }
 
@@ -1795,7 +1853,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnj_d, -1, -1, -1);
+               m.fsgnj_d(-1, -1, -1);
            });
     }
 
@@ -1806,7 +1864,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjn_d, -1, -1, -1);
+               m.fsgnjn_d(-1, -1, -1);
            });
     }
 
@@ -1817,7 +1875,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjx_d, -1, -1, -1);
+               m.fsgnjx_d(-1, -1, -1);
            });
     }
 
@@ -1828,7 +1886,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmin_d, -1, -1, -1);
+               m.fmin_d(-1, -1, -1);
            });
     }
 
@@ -1839,7 +1897,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmax_d, -1, -1, -1);
+               m.fmax_d(-1, -1, -1);
            });
     }
 
@@ -1850,7 +1908,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_d, -1, -1, -1);
+               m.fcvt_s_d(-1, -1, -1, -1);
            });
     }
 
@@ -1861,7 +1919,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_s, -1, -1, -1);
+               m.fcvt_d_s(-1, -1, -1, -1);
            });
     }
 
@@ -1872,7 +1930,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(feq_d, -1, -1, -1);
+               m.feq_d(-1, -1, -1);
            });
     }
 
@@ -1883,7 +1941,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(flt_d, -1, -1, -1);
+               m.flt_d(-1, -1, -1);
            });
     }
 
@@ -1894,7 +1952,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fle_d, -1, -1, -1);
+               m.fle_d(-1, -1, -1);
            });
     }
 
@@ -1905,7 +1963,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fclass_d, -1, -1, -1);
+               m.fclass_d(-1, -1, -1);
            });
     }
 
@@ -1916,7 +1974,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_w_d, -1, -1, -1);
+               m.fcvt_w_d(-1, -1, -1, -1);
            });
     }
 
@@ -1927,7 +1985,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_wu_d, -1, -1, -1);
+               m.fcvt_wu_d(-1, -1, -1, -1);
            });
     }
 
@@ -1938,7 +1996,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_w, -1, -1, -1);
+               m.fcvt_d_w(-1, -1, -1, -1);
            });
     }
 
@@ -1949,7 +2007,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_wu, -1, -1, -1);
+               m.fcvt_d_wu(-1, -1, -1, -1);
            });
     }
 
@@ -1962,7 +2020,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_l_d, -1, -1, -1);
+               m.fcvt_l_d(-1, -1, -1, -1);
            });
     }
 
@@ -1973,7 +2031,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_lu_d, -1, -1, -1);
+               m.fcvt_lu_d(-1, -1, -1, -1);
            });
     }
 
@@ -1984,7 +2042,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_x_d, -1, -1, -1);
+               m.fmv_x_d(-1, -1, -1);
            });
     }
 
@@ -1995,7 +2053,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_l, -1, -1, -1);
+               m.fcvt_d_l(-1, -1, -1, -1);
            });
     }
 
@@ -2006,7 +2064,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_lu, -1, -1, -1);
+               m.fcvt_d_lu(-1, -1, -1, -1);
            });
     }
 
@@ -2017,7 +2075,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_d_x, -1, -1, -1);
+               m.fmv_d_x(-1, -1, -1);
            });
     }
 
@@ -2031,7 +2089,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(flq, -1, -1, -1);
+                    m.flq(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -2044,7 +2102,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(fsq, -1, -1, -1);
+                    m.fsq(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -2056,7 +2114,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmadd_q, -1, -1, -1);
+               m.fmadd_q(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2067,7 +2125,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmsub_q, -1, -1, -1);
+               m.fmsub_q(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2076,10 +2134,11 @@ public class EmulatorTests
     [Ignore("nyi")]
     public void RiscVEmu_fnmsub_q()
     {
-        RunTest(m =>
-           {
-               m.asm(fnmsub_q, -1, -1, -1);
-           });
+        // RunTest(m =>
+        //    {
+        //        m.fnmsub_q(-1, -1, -1);
+        //    });
+           Assert.Fail();
     }
 
 
@@ -2089,8 +2148,9 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmadd_q, -1, -1, -1);
+               m.fnmadd_q(-1, -1, -1, -1, -1);
            });
+        Assert.Fail();
     }
 
 
@@ -2100,7 +2160,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fadd_q, -1, -1, -1);
+               m.fadd_q(-1, -1, -1, -1);
            });
     }
 
@@ -2111,7 +2171,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsub_q, -1, -1, -1);
+               m.fsub_q(-1, -1, -1, -1);
            });
     }
 
@@ -2122,7 +2182,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmul_q, -1, -1, -1);
+               m.fmul_q(-1, -1, -1, -1);
            });
     }
 
@@ -2133,7 +2193,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fdiv_q, -1, -1, -1);
+               m.fdiv_q(-1, -1, -1, -1);
            });
     }
 
@@ -2144,7 +2204,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsqrt_q, -1, -1, -1);
+               m.fsqrt_q(-1, -1, -1, -1);
            });
     }
 
@@ -2155,7 +2215,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnj_q, -1, -1, -1);
+               m.fsgnj_q(-1, -1, -1);
            });
     }
 
@@ -2166,7 +2226,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjn_q, -1, -1, -1);
+               m.fsgnjn_q(-1, -1, -1);
            });
     }
 
@@ -2177,7 +2237,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjx_q, -1, -1, -1);
+               m.fsgnjx_q(-1, -1, -1);
            });
     }
 
@@ -2188,7 +2248,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmin_q, -1, -1, -1);
+               m.fmin_q(-1, -1, -1);
            });
     }
 
@@ -2199,7 +2259,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmax_q, -1, -1, -1);
+               m.fmax_q(-1, -1, -1);
            });
     }
 
@@ -2210,7 +2270,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_q, -1, -1, -1);
+               m.fcvt_s_q(-1, -1, -1, -1);
            });
     }
 
@@ -2221,7 +2281,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_s, -1, -1, -1);
+               m.fcvt_q_s(-1, -1, -1, -1);
            });
     }
 
@@ -2232,7 +2292,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_q, -1, -1, -1);
+               m.fcvt_d_q(-1, -1, -1, -1);
            });
     }
 
@@ -2243,7 +2303,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_d, -1, -1, -1);
+               m.fcvt_q_d(-1, -1, -1, -1);
            });
     }
 
@@ -2254,7 +2314,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(feq_q, -1, -1, -1);
+               m.feq_q(-1, -1, -1);
            });
     }
 
@@ -2265,7 +2325,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(flt_q, -1, -1, -1);
+               m.flt_q(-1, -1, -1);
            });
     }
 
@@ -2276,7 +2336,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fle_q, -1, -1, -1);
+               m.fle_q(-1, -1, -1);
            });
     }
 
@@ -2287,7 +2347,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fclass_q, -1, -1, -1);
+               m.fclass_q(-1, -1, -1);
            });
     }
 
@@ -2298,7 +2358,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_w_q, -1, -1, -1);
+               m.fcvt_w_q(-1, -1, -1, -1);
            });
     }
 
@@ -2309,7 +2369,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_wu_q, -1, -1, -1);
+               m.fcvt_wu_q(-1, -1, -1, -1);
            });
     }
 
@@ -2320,7 +2380,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_w, -1, -1, -1);
+               m.fcvt_q_w(-1, -1, -1, -1);
            });
     }
 
@@ -2331,7 +2391,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_wu, -1, -1, -1);
+               m.fcvt_q_wu(-1, -1, -1, -1);
            });
     }
 
@@ -2344,7 +2404,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_l_q, -1, -1, -1);
+               m.fcvt_l_q(-1, -1, -1, -1);
            });
     }
 
@@ -2355,7 +2415,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_lu_q, -1, -1, -1);
+               m.fcvt_lu_q(-1, -1, -1, -1);
            });
     }
 
@@ -2366,7 +2426,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_l, -1, -1, -1);
+               m.fcvt_q_l(-1, -1, -1, -1);
            });
     }
 
@@ -2377,7 +2437,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_lu, -1, -1, -1);
+               m.fcvt_q_lu(-1, -1, -1, -1);
            });
     }
 
@@ -2392,7 +2452,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(flh, -1, -1, -1);
+                    m.flh(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -2405,7 +2465,7 @@ public class EmulatorTests
         RunTest(m =>
                 {
 
-                    m.asm(fsh, -1, -1, -1);
+                    m.fsh(-1, -1, -1);
                 });
         Assert.Fail("Not implemented");
     }
@@ -2417,7 +2477,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmadd_h, -1, -1, -1);
+               m.fmadd_h(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2428,7 +2488,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmsub_h, -1, -1, -1);
+               m.fmsub_h(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2439,7 +2499,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmsub_h, -1, -1, -1);
+               m.fnmsub_h(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2450,7 +2510,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fnmadd_h, -1, -1, -1);
+               m.fnmadd_h(-1, -1, -1, -1, -1);
            });
     }
 
@@ -2461,7 +2521,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fadd_h, -1, -1, -1);
+               m.fadd_h(-1, -1, -1, -1);
            });
     }
 
@@ -2472,7 +2532,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsub_h, -1, -1, -1);
+               m.fsub_h(-1, -1, -1, -1);
            });
     }
 
@@ -2483,7 +2543,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmul_h, -1, -1, -1);
+               m.fmul_h(-1, -1, -1, -1);
            });
     }
 
@@ -2494,7 +2554,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fdiv_h, -1, -1, -1);
+               m.fdiv_h(-1, -1, -1, -1);
            });
     }
 
@@ -2505,7 +2565,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsqrt_h, -1, -1, -1);
+               m.fsqrt_h(-1, -1, -1);
            });
     }
 
@@ -2516,7 +2576,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnj_h, -1, -1, -1);
+               m.fsgnj_h(-1, -1, -1);
            });
     }
 
@@ -2527,7 +2587,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjn_h, -1, -1, -1);
+               m.fsgnjn_h(-1, -1, -1);
            });
     }
 
@@ -2538,7 +2598,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fsgnjx_h, -1, -1, -1);
+               m.fsgnjx_h(-1, -1, -1);
            });
     }
 
@@ -2549,7 +2609,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmin_h, -1, -1, -1);
+               m.fmin_h(-1, -1, -1);
            });
     }
 
@@ -2560,7 +2620,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmax_h, -1, -1, -1);
+               m.fmax_h(-1, -1, -1);
            });
     }
 
@@ -2571,7 +2631,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_s_h, -1, -1, -1);
+               m.fcvt_s_h(-1, -1, -1, -1);
            });
     }
 
@@ -2582,7 +2642,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_s, -1, -1, -1);
+               m.fcvt_h_s(-1, -1, -1, -1);
            });
     }
 
@@ -2593,7 +2653,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_d_h, -1, -1, -1);
+               m.fcvt_d_h(-1, -1, -1, -1);
            });
     }
 
@@ -2604,7 +2664,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_d, -1, -1, -1);
+               m.fcvt_h_d(-1, -1, -1, -1);
            });
     }
 
@@ -2615,7 +2675,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_q_h, -1, -1, -1);
+               m.fcvt_q_h(-1, -1, -1);
            });
     }
 
@@ -2626,7 +2686,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_q, -1, -1, -1);
+               m.fcvt_h_q(-1, -1, -1);
            });
     }
 
@@ -2637,7 +2697,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(feq_h, -1, -1, -1);
+               m.feq_h(-1, -1, -1);
            });
     }
 
@@ -2648,7 +2708,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(flt_h, -1, -1, -1);
+               m.flt_h(-1, -1, -1);
            });
     }
 
@@ -2659,7 +2719,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fle_h, -1, -1, -1);
+               m.fle_h(-1, -1, -1);
            });
     }
 
@@ -2670,7 +2730,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fclass_h, -1, -1, -1);
+               m.fclass_h(-1, -1, -1);
            });
     }
 
@@ -2681,7 +2741,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_w_h, -1, -1, -1);
+               m.fcvt_w_h(-1, -1, -1, -1);
            });
     }
 
@@ -2692,7 +2752,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_wu_h, -1, -1, -1);
+               m.fcvt_wu_h(-1, -1, -1, -1);
            });
     }
 
@@ -2703,7 +2763,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_x_h, -1, -1, -1);
+               m.fmv_x_h(-1, -1, -1);
            });
     }
 
@@ -2714,7 +2774,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_w, -1, -1, -1);
+               m.fcvt_h_w(-1, -1, -1, -1);
            });
     }
 
@@ -2725,7 +2785,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_wu, -1, -1, -1);
+               m.fcvt_h_wu(-1, -1, -1, -1);
            });
     }
 
@@ -2736,7 +2796,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fmv_h_x, -1, -1, -1);
+               m.fmv_h_x(-1, -1, -1);
            });
     }
 
@@ -2749,7 +2809,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_l_h, -1, -1, -1);
+               m.fcvt_l_h(-1, -1, -1, -1);
            });
     }
 
@@ -2762,7 +2822,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_lu_h, -1, -1, -1);
+               m.fcvt_lu_h(-1, -1, -1, -1);
            });
     }
 
@@ -2773,7 +2833,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_l, -1, -1, -1);
+               m.fcvt_h_l(-1, -1, -1, -1);
            });
     }
 
@@ -2784,7 +2844,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(fcvt_h_lu, -1, -1, -1);
+               m.fcvt_h_lu(-1, -1, -1, -1);
            });
     }
 
@@ -2796,7 +2856,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(wrs_nto, -1, -1, -1);
+               m.wrs_nto();
            });
     }
 
@@ -2807,7 +2867,7 @@ public class EmulatorTests
     {
         RunTest(m =>
            {
-               m.asm(wrs_sto, -1, -1, -1);
+               m.wrs_sto();
            });
     }
 }
