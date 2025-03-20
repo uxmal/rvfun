@@ -6,11 +6,16 @@ namespace rvfun.UnitTests;
 [TestFixture]
 public class TextAssemblerTests
 {
+    private TextAssembler Given_TextAssembler(string testAsm)
+    {
+        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm), new Logger());
+        return tasm;
+    }
+
     [Test]
     public void Tasm_Number()
     {
-        var testAsm = " 1 ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 1 ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(1));
@@ -22,8 +27,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Number_Long()
     {
-        var testAsm = " 12 ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 12 ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(12));
@@ -32,8 +36,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_Colon()
     {
-        var testAsm = " : ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" : ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Colon));
     }
@@ -41,8 +44,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_Parens()
     {
-        var testAsm = ",() ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(",() ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.LParen));
         var token2 = tasm.GetToken();
@@ -52,8 +54,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_BinaryNumber()
     {
-        var testAsm = " 0b1 ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 0b1 ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(1));
@@ -62,8 +63,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_LongBinaryNumber()
     {
-        var testAsm = " 0b1010 ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 0b1010 ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(10));
@@ -72,8 +72,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_HexNumber()
     {
-        var testAsm = " 0xf ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 0xf ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(15));
@@ -83,8 +82,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_LongHexNumber()
     {
-        var testAsm = " 0xff ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" 0xff ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Number));
         Assert.That(tasm.CurrentValue, Is.EqualTo(255));
@@ -93,8 +91,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_Word()
     {
-        var testAsm = " b ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" b ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo("b"));
@@ -103,8 +100,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_Word_Underscore()
     {
-        var testAsm = " _ ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" _ ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo("_"));
@@ -113,8 +109,7 @@ public class TextAssemblerTests
     [Test]
     public void Task_Word_UnderscoreDigit()
     {
-        var testAsm = " _2 ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" _2 ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo("_2"));
@@ -123,8 +118,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Unix()
     {
-        var testAsm = "  \n ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler("  \n ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.EndLine));
         var token2 = tasm.GetToken();
@@ -134,8 +128,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Windows()
     {
-        var testAsm = "  \r\n ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler("  \r\n ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.EndLine));
         var token2 = tasm.GetToken();
@@ -145,8 +138,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_MacOsClassic()
     {
-        var testAsm = "  \r ";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler("  \r ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.EndLine));
         var token2 = tasm.GetToken();
@@ -156,8 +148,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Comment()
     {
-        var testAsm = " hello ; comment\n world";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" hello ; comment\n world");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo("hello"));
@@ -171,8 +162,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Directive()
     {
-        var testAsm = " .test";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" .test");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo(".test"));
@@ -181,8 +171,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_OperandDirective()
     {
-        var testAsm = " %test";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler(" %test");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.Word));
         Assert.That(tasm.GetTokenString(), Is.EqualTo("%test"));
@@ -191,8 +180,7 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Label()
     {
-        var testAsm = "symbol:";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler("symbol:");
         tasm.AssembleLine();
 
         Assert.That(tasm.Symbols.ContainsKey("symbol"), Is.True);
@@ -202,12 +190,87 @@ public class TextAssemblerTests
     [Test]
     public void Tasm_Peek()
     {
-        var testAsm = "hello 1";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(testAsm));
+        var tasm = Given_TextAssembler("hello 1");
         Assert.That(tasm.PeekToken(), Is.EqualTo(Token.Word));
         Assert.That(tasm.PeekToken(), Is.EqualTo(Token.Word));
         Assert.That(tasm.GetToken(), Is.EqualTo(Token.Word));
         Assert.That(tasm.PeekToken(), Is.EqualTo(Token.Number));
+    }
+
+    [Test]
+    public void Tasm_EmptyFile()
+    {
+        var tasm = Given_TextAssembler("");
+        Assert.That(tasm.AssembleLine(), Is.False);
+    }
+
+    [Test]
+    public void Tasm_TwoLines()
+    {
+        var tasm = Given_TextAssembler("\r\n");
+        Assert.That(tasm.AssembleLine(), Is.True);
+        Assert.That(tasm.AssembleLine(), Is.False);
+    }
+
+    [Test]
+    public void Tasm_Line_not_beginning_with_word()
+    {
+        var asm = "3 a d\r\n";
+        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asm), new Logger());
+        Assert.That(tasm.AssembleLine(), Is.True);
+        Assert.That(tasm.AssembleFile(), Is.Null);
+    }
+
+    [Test]
+    public void Tasm_Two_Labels_same_line()
+    {
+        var tasm = Given_TextAssembler("label: label2:\r\n");
+        Assert.That(tasm.AssembleFile(), !Is.Null);
+        Assert.That(tasm.Symbols.Count, Is.EqualTo(2));
+        Assert.That(tasm.Symbols.ContainsKey("label"), Is.True);
+        Assert.That(tasm.Symbols.ContainsKey("label2"), Is.True);
+    }
+
+    [Test]
+    public void Tasm_addi()
+    {
+        RunTest(
+            "   addi 2,0,1\r\n",
+            m => m.addi(2, 0, 1));
+    }
+
+    [Test]
+    public void Tasm_sub()
+    {
+        RunTest(
+            "   sub 2,0,1\r\n",
+            m => m.sub(2, 0, 1));
+    }
+
+    private void RunTest(string asmSource, Action<Assembler> builder)
+    {
+        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asmSource), new Logger());
+        var section = tasm.AssembleFile();
+        Assert.That(section, !Is.Null);
+
+        var casm = new Assembler(new Logger());
+        builder(casm);
+
+        Assert.That(section.GetAssembledBytes(), Is.EqualTo(casm.Section.GetAssembledBytes()));
+    }
+
+    [Test]
+    public void Tasm_add()
+    {
+        var asm = "   add 2,0,1\r\n";
+        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asm), new Logger());
+        var section = tasm.AssembleFile();
+        Assert.That(section, !Is.Null);
+
+        var casm = new Assembler(new Logger());
+        casm.add(2, 0, 1);
+
+        Assert.That(section.GetAssembledBytes(), Is.EqualTo(casm.Section.GetAssembledBytes()));
     }
 }
 

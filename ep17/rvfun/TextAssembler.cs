@@ -1,6 +1,3 @@
-
-
-
 using System.Text;
 
 namespace rvfun;
@@ -14,7 +11,9 @@ public class TextAssembler
     private int iBeginPos;
     private Token previousToken;
 
-    public TextAssembler(byte[] bytes)
+    private Assembler asm;
+
+    public TextAssembler(byte[] bytes, Logger logger)
     {
         this.bytes = bytes;
         this.iPos = 0;
@@ -22,24 +21,139 @@ public class TextAssembler
         this.valid = true;
         this.Symbols = [];
         this.previousToken = Token.EOF;
-        this.Section = new AssemblerSection();
+        this.asm = new Assembler(logger);
     }
 
     public int CurrentValue { get; private set; }
-    public Dictionary<string, Symbol> Symbols {get;}
-    public AssemblerSection Section {get;}
+    public Dictionary<string, Symbol> Symbols { get; }
+    public AssemblerSection Section => asm.Section;
 
-    public void AssembleLine()
+    public AssemblerSection? AssembleFile()
+    {
+        while (AssembleLine())
+        {
+        }
+        return valid ? Section : null;
+    }
+
+    // Returns true if a line was processed by the assembler and more 
+    // input is expected, returns false if we have reached end of file.
+    public bool AssembleLine()
+    {
+        string w;
+        for (; ; )
+        {
+            var token = GetToken();
+            if (token == Token.EOF)
+                return false;
+            if (token == Token.EndLine)
+                return true;
+            if (token != Token.Word)
+            {
+                UnexpectedToken(token);
+                return SkipUntil(Token.EndLine);
+            }
+            w = this.GetTokenString();
+            if (!PeekAndDiscard(Token.Colon))
+                break;
+            var symbol = new Symbol(w, Section.Position);
+            AddSymbol(w, symbol);
+        }
+        // We have seen a word, classify it.
+        foreach (var enc in encoders)
+        {
+            if (enc.Mnemonic == w)
+            {
+                enc.Handler(this, enc.Opcode);
+                return true;
+            }
+        }
+        switch (w)
+        {
+            default:
+                throw new NotImplementedException($"Unknown mnemonic or directive '{w}'.");
+        }
+        return false;
+    }
+
+    private static AsmEncoder [] encoders = [
+        new AsmEncoder("addi", 0b000_00000_0010011, AsmI),
+        new AsmEncoder("add", 0b0000000_0000000000_000_00000_0110011, AsmR),
+        new AsmEncoder("sub", 0b0100000_0000000000_000_00000_0110011, AsmR)
+    ] ;
+
+    private class AsmEncoder{
+        public AsmEncoder(string mnemonic, uint opcode, Action<TextAssembler, uint> handler)
+        {
+            this.Mnemonic = mnemonic;
+            this.Opcode = opcode;
+            this.Handler = handler;
+        }
+
+        public string Mnemonic { get; }
+        public uint Opcode { get; }
+        public Action<TextAssembler, uint> Handler { get; }
+    }
+
+    
+    private static void AsmI(TextAssembler asm, uint opcode)
+    {
+        var dst = asm.ExpectNumber();
+        var src1 = asm.ExpectNumber();
+        var src2 = asm.ExpectNumber();
+        asm.ExpectEndLine();
+        asm.asm.asmI(opcode, dst, src1, src2);
+    }
+
+    private static void AsmR(TextAssembler asm, uint opcode)
+    {
+        var dst = asm.ExpectNumber();
+        var src1 = asm.ExpectNumber();
+        var src2 = asm.ExpectNumber();
+        asm.ExpectEndLine();
+        asm.asm.asmR(opcode, dst, src1, src2);
+    }
+
+    private void ExpectEndLine()
     {
         var token = GetToken();
-        if (token == Token.Word)
+        if (token == Token.EOF || token == Token.EndLine)
+            return;
+        Expected("an end of line");
+        SkipUntil(Token.EndLine);
+    }
+
+    private int ExpectNumber()
+    {
+        if (GetToken() != Token.Number)
         {
-            var w = this.GetTokenString();
-            if (PeekAndDiscard(Token.Colon))
-            {
-                var symbol = new Symbol(w, Section.Position);
-                AddSymbol(w, symbol);
-            }
+            Expected("a number");
+            return 0;
+        }
+        return this.CurrentValue;
+    }
+
+    private void Expected(string expected)
+    {
+        Console.WriteLine($"error({linenumber}): Expected {expected}.");
+        this.valid = false;
+    }
+
+    private void UnexpectedToken(Token token)
+    {
+        Console.WriteLine($"error({linenumber}): Unexpected token '{token}'.");
+        valid = false;
+    }
+
+    private bool SkipUntil(Token endLine)
+    {
+        for (; ; )
+        {
+            var token = GetToken();
+            if (token == Token.EOF)
+                return false;
+            else if (token == Token.EndLine)
+                return true;
         }
     }
 
@@ -285,7 +399,7 @@ public class TextAssembler
                 case State.Cr:
                     switch (c)
                     {
-                        case -1: 
+                        case -1:
                             return Token.EndLine;
                         case '\n':
                             ++linenumber;
@@ -296,7 +410,7 @@ public class TextAssembler
                             return Token.EndLine;
                     }
                 case State.Comment:
-                    switch(c)
+                    switch (c)
                     {
                         case -1:
                             return Token.EndLine;
@@ -309,7 +423,7 @@ public class TextAssembler
                         default:
                             continue;
                     }
-                }
+            }
         }
     }
 

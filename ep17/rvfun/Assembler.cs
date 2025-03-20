@@ -1252,7 +1252,7 @@ public class Assembler
 
     // Assembles a Risc-V I-type instruction.
 
-    private void asmI(uint opcode, int dst, int src1, int src2)
+    internal void asmI(uint opcode, int dst, int src1, int src2)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
@@ -1263,7 +1263,7 @@ public class Assembler
     }
 
     // Assembles a Risc-V R-type instruction.
-    private void asmR(uint opcode, int dst, int src1, int src2)
+    internal void asmR(uint opcode, int dst, int src1, int src2)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
