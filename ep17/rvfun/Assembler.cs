@@ -18,7 +18,7 @@ public class Assembler
     public AssemblerSection Section {get;}
     public Dictionary<string, Symbol> Symbols {get; }
     public List<Relocation> Relocations {get;}
-
+    public uint Position => instrPtr;
     public Logger Logger {get;}
 
     public Symbol? AddSymbol(string name, uint value)
@@ -1229,7 +1229,7 @@ public class Assembler
         }
     }
 
-    private void asmJ(uint opcode, int rd, int offset)
+    internal void asmJ(uint opcode, int rd, int offset)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(rd & 0b11111) << 7;
@@ -1239,7 +1239,7 @@ public class Assembler
     }
 
 
-    private void asmB(uint opcode, int src1, int src2, int offset)
+    internal void asmB(uint opcode, int src1, int src2, int offset)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(src1 & 0b11111) << 15;
@@ -1249,7 +1249,7 @@ public class Assembler
         instrPtr += 4;
     }
 
-    private void asmS(uint opcode, int src2, int baseReg, int offset)
+    internal void asmS(uint opcode, int src2, int baseReg, int offset)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(offset & 0b11111) << 7;
@@ -1325,9 +1325,9 @@ public class Assembler
     }
 
 
-    // Assembles a Risc-V I-type instruction.
+    // Assembles a Risc-V U-type instruction.
 
-    private void asmU(uint opcode, int dst, int src1)
+    internal void asmU(uint opcode, int dst, int src1)
     {
         uint uInstr = opcode;
         uInstr |= (uint)(dst & 0b11111) << 7;
@@ -1393,7 +1393,7 @@ public class Assembler
         return sym!;
     }
 
-    private Relocation EmitRelocation(uint instrPtr, RelocationType rtype, string symbolName)
+    internal Relocation EmitRelocation(uint instrPtr, RelocationType rtype, string symbolName)
     {
         var rel = new Relocation(instrPtr, rtype, symbolName);
         this.Relocations.Add(rel);

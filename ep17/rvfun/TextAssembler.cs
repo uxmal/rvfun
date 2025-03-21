@@ -19,14 +19,15 @@ public class TextAssembler
         this.iPos = 0;
         this.linenumber = 1;
         this.valid = true;
-        this.Symbols = [];
         this.previousToken = Token.EOF;
         this.asm = new Assembler(logger);
     }
 
     public int CurrentValue { get; private set; }
-    public Dictionary<string, Symbol> Symbols { get; }
+    public Dictionary<string, Symbol> Symbols => asm.Symbols;
     public AssemblerSection Section => asm.Section;
+
+    public List<Relocation> Relocations => asm.Relocations;
 
     public AssemblerSection? AssembleFile()
     {
@@ -56,8 +57,10 @@ public class TextAssembler
             w = this.GetTokenString();
             if (!PeekAndDiscard(Token.Colon))
                 break;
-            var symbol = new Symbol(w, Section.Position);
-            AddSymbol(w, symbol);
+            if (asm.AddSymbol(w, asm.Position) is null)
+            {
+                Error($"Redefinition of symbol '{w}'.");
+            }
         }
         // We have seen a word, classify it.
         foreach (var enc in encoders)
@@ -68,18 +71,29 @@ public class TextAssembler
                 return true;
             }
         }
-        switch (w)
-        {
-            default:
-                throw new NotImplementedException($"Unknown mnemonic or directive '{w}'.");
-        }
-        return false;
+        Error($"Unknown mnemonic or directive '{w}'.");
+        return SkipUntil(Token.EndLine);
+    }
+
+    private void Error(string message)
+    {
+        Console.WriteLine($"error({linenumber}): {message}");
+        this.valid = false;
     }
 
     private static AsmEncoder [] encoders = [
         new AsmEncoder("addi", 0b000_00000_0010011, AsmI),
         new AsmEncoder("add", 0b0000000_0000000000_000_00000_0110011, AsmR),
-        new AsmEncoder("sub", 0b0100000_0000000000_000_00000_0110011, AsmR)
+        new AsmEncoder("auipc", 0b0010111, AsmAuipc),
+        new AsmEncoder("beq", 0b000_00000_1100011, AsmB),
+        new AsmEncoder("blt", 0b100_00000_1100011, AsmB),
+        new AsmEncoder("j", 0b1101111, AsmJ),
+        new AsmEncoder("jal", 0b1101111, AsmJal),
+        new AsmEncoder("lw", 0b010_00000_0000011, AsmI),
+        new AsmEncoder("li", 0, AsmLi),
+        new AsmEncoder("slli", 0b0000000_0000000000_001_00000_0010011, AsmShifti),
+        new AsmEncoder("sub", 0b0100000_0000000000_000_00000_0110011, AsmR),
+        new AsmEncoder("sw", 0b010_00000_0100011, AsmS)
     ] ;
 
     private class AsmEncoder{
@@ -96,13 +110,58 @@ public class TextAssembler
     }
 
     
+    private static void AsmAuipc(TextAssembler asm, uint opcode)
+    {
+        var reg = asm.ExpectNumber();
+        var imm = asm.ExpectImmediate();
+        asm.ExpectEndLine();
+        asm.asm.asmU(opcode, reg, imm);
+
+    }
+    
+    private static void AsmB(TextAssembler asm, uint opcode)
+    {
+        var reg1 = asm.ExpectNumber();
+        var reg2 = asm.ExpectNumber();
+        var target = asm.ExpectSymbol();
+        asm.ExpectEndLine();
+
+        asm.asm.EmitRelocation(asm.asm.Position, RelocationType.B_PcRelative, target);
+        asm.asm.asmB(opcode, reg1, reg2, 0);
+    }
+
     private static void AsmI(TextAssembler asm, uint opcode)
     {
         var dst = asm.ExpectNumber();
         var src1 = asm.ExpectNumber();
-        var src2 = asm.ExpectNumber();
+        var src2 = asm.ExpectImmediate();
         asm.ExpectEndLine();
         asm.asm.asmI(opcode, dst, src1, src2);
+    }
+
+    private static void AsmJ(TextAssembler asm, uint opcode)
+    {
+        var target = asm.ExpectSymbol();
+        asm.ExpectEndLine();
+        asm.asm.EmitRelocation(asm.asm.Position, RelocationType.J_PcRelative, target);
+        asm.asm.asmJ(opcode, 0, 0);
+    }
+
+    private static void AsmJal(TextAssembler asm, uint opcode)
+    {
+        var linkRegister = asm.ExpectNumber();
+        var target = asm.ExpectSymbol();
+        asm.ExpectEndLine();
+        asm.asm.EmitRelocation(asm.asm.Position, RelocationType.J_PcRelative, target);
+        asm.asm.asmJ(opcode, linkRegister, 0);
+    }
+
+    private static void AsmLi(TextAssembler asm, uint opcode)
+    {
+        var reg = asm.ExpectNumber();
+        var imm = asm.ExpectImmediate();
+        asm.ExpectEndLine();
+        asm.asm.li(reg, imm);
     }
 
     private static void AsmR(TextAssembler asm, uint opcode)
@@ -114,6 +173,27 @@ public class TextAssembler
         asm.asm.asmR(opcode, dst, src1, src2);
     }
 
+    // Special casse for Shift instructions because their immediate
+    // values are smaller than the I-type instructions.
+    private static void AsmShifti(TextAssembler asm, uint opcode)
+    {
+        var dst = asm.ExpectNumber();
+        var src1 = asm.ExpectNumber();
+        var src2 = asm.ExpectImmediate();
+        asm.ExpectEndLine();
+        asm.asm.asmR(opcode, dst, src1, src2);
+    }
+
+    private static void AsmS(TextAssembler asm, uint opcode)
+    {
+        var src = asm.ExpectNumber();
+        var baseReg = asm.ExpectNumber();
+        var offset = asm.ExpectNumber();
+        asm.ExpectEndLine();
+        asm.asm.asmS(opcode, src, baseReg, offset);
+    }
+
+
     private void ExpectEndLine()
     {
         var token = GetToken();
@@ -121,6 +201,39 @@ public class TextAssembler
             return;
         Expected("an end of line");
         SkipUntil(Token.EndLine);
+    }
+
+    private int ExpectImmediate()
+    {
+        var token = GetToken();
+        if (token == Token.Number)
+        {
+            return this.CurrentValue;
+        }
+        if (token == Token.Word)
+        {
+            var w = this.GetTokenString();
+            if (w == "%pcrel_hi")
+            {
+                ExpectToken(Token.LParen);
+                var symbol = ExpectSymbol();
+                ExpectToken(Token.RParen);
+                var rel = asm.pcrel_hi(symbol);
+                this.Relocations.Add(rel);
+                return 0;
+            }
+            else if (w == "%pcrel_lo")
+            {
+                ExpectToken(Token.LParen);
+                var offfset = ExpectNumber();
+                ExpectToken(Token.RParen);
+                var rel = asm.pcrel_lo(offfset);
+                this.Relocations.Add(rel);
+                return 0;
+            }
+        }
+        UnexpectedToken(token);
+        return 0;
     }
 
     private int ExpectNumber()
@@ -133,36 +246,44 @@ public class TextAssembler
         return this.CurrentValue;
     }
 
+    private string ExpectSymbol()
+    {
+        if (GetToken() != Token.Word)
+        {
+            Expected("a symbol");
+            return "";
+        }
+        return this.GetTokenString();
+    }
+
+    private void ExpectToken(Token expected)
+    {
+        if (GetToken() != expected)
+        {
+            Error($"expected a {expected}.");
+        }
+    }
+
     private void Expected(string expected)
     {
-        Console.WriteLine($"error({linenumber}): Expected {expected}.");
-        this.valid = false;
+        Error($"Expected {expected}.");
     }
 
     private void UnexpectedToken(Token token)
     {
-        Console.WriteLine($"error({linenumber}): Unexpected token '{token}'.");
-        valid = false;
+        Error($"Unexpected token '{token}'.");
     }
 
-    private bool SkipUntil(Token endLine)
+    private bool SkipUntil(Token stopToken)
     {
         for (; ; )
         {
             var token = GetToken();
             if (token == Token.EOF)
                 return false;
-            else if (token == Token.EndLine)
+            else if (token == stopToken)
                 return true;
         }
-    }
-
-    private void AddSymbol(string name, Symbol symbol)
-    {
-        if (Symbols.TryAdd(name, symbol))
-            return;
-        Console.WriteLine($"error({linenumber}): Duplicate symbol '{name}'.");
-        this.valid = false;
     }
 
     private bool PeekAndDiscard(Token expectedToken)
@@ -194,6 +315,7 @@ public class TextAssembler
     private Token ReadToken()
     {
         var state = State.Start;
+        int sign = 1;
         for (; ; )
         {
             int c;
@@ -232,6 +354,9 @@ public class TextAssembler
                         case ';':
                             state = State.Comment;
                             continue;
+                        case '-':
+                            state = State.Minus;
+                            continue;
                         case '0':
                         case '1':
                         case '2':
@@ -259,6 +384,7 @@ public class TextAssembler
                     switch (c)
                     {
                         case -1:
+                            CurrentValue *= sign;
                             return Token.Number;
                         case 'b':
                         case 'B':
@@ -282,6 +408,7 @@ public class TextAssembler
                             continue;
                         default:
                             --iPos;
+                            CurrentValue *= sign;
                             return Token.Number;
                     }
                 case State.BinaryNumberStart:
@@ -300,6 +427,7 @@ public class TextAssembler
                     switch (c)
                     {
                         case -1:
+                            CurrentValue *= sign;
                             return Token.Number;
                         case '0':
                         case '1':
@@ -307,6 +435,7 @@ public class TextAssembler
                             continue;
                         default:
                             --iPos;
+                            CurrentValue *= sign;
                             return Token.Number;
                     }
                 case State.HexNumberStart:
@@ -383,6 +512,7 @@ public class TextAssembler
                             continue;
                         default:
                             --iPos;
+                            CurrentValue *= sign;
                             return Token.Number;
                     }
                 case State.Word:
@@ -423,6 +553,29 @@ public class TextAssembler
                         default:
                             continue;
                     }
+                case State.Minus:
+                    switch (c)
+                    {
+                        case -1:
+                        default:
+                            this.Unexpected('-');
+                            continue;
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                            sign = -1;
+                            CurrentValue = c - '0';
+                            state = State.Number;
+                            continue;
+
+                    }
             }
         }
     }
@@ -434,8 +587,7 @@ public class TextAssembler
 
     private void Unexpected(int c)
     {
-        Console.WriteLine($"error({linenumber}): Unexpected character '{c}' (ASCII: {(int)c:X2})");
-        this.valid = false;
+        Error($"Unexpected character '{(char)c}' (ASCII: {(int)c:X2})");
     }
 
     private enum State
@@ -449,6 +601,7 @@ public class TextAssembler
         Word,
         Cr,
         Comment,
+        Minus,
     }
 }
 

@@ -25,6 +25,19 @@ public class TextAssemblerTests
     }
 
     [Test]
+    public void Tasm_NegativeNumber()
+    {
+        var tasm = Given_TextAssembler(" -1 ");
+        var token = tasm.GetToken();
+        Assert.That(token, Is.EqualTo(Token.Number));
+        Assert.That(tasm.CurrentValue, Is.EqualTo(-1));
+
+        var token2 = tasm.GetToken();
+        Assert.That(token2, Is.EqualTo(Token.EOF));
+    }
+
+
+    [Test]
     public void Tasm_Number_Long()
     {
         var tasm = Given_TextAssembler(" 12 ");
@@ -231,12 +244,116 @@ public class TextAssemblerTests
         Assert.That(tasm.Symbols.ContainsKey("label2"), Is.True);
     }
 
+    private TextAssembler RunTest(string asmSource, Action<Assembler> builder)
+    {
+        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asmSource), new Logger());
+        var section = tasm.AssembleFile();
+        Assert.That(section, !Is.Null);
+
+        var casm = new Assembler(new Logger());
+        builder(casm);
+
+        Assert.That(section.GetAssembledBytes(), Is.EqualTo(casm.Section.GetAssembledBytes()));
+        return tasm;
+    }
+
+    [Test]
+    public void Tasm_add()
+    {
+        RunTest(
+            "   add 2,0,1\r\n",
+            m => m.add(2, 0, 1));
+    }
+
     [Test]
     public void Tasm_addi()
     {
         RunTest(
             "   addi 2,0,1\r\n",
             m => m.addi(2, 0, 1));
+    }
+
+  [Test]
+    public void Tasm_addi_with_relocation()
+    {
+        var tasm = RunTest(
+            "   addi   10, 10, %pcrel_lo(-4)\r\n",
+            m => m.addi(10,10, m.pcrel_lo(-4)));
+        Assert.That(tasm.Relocations.Count, Is.EqualTo(1));
+        Assert.That(tasm.Relocations[0].Rtype, Is.EqualTo(RelocationType.I_PcRelative_Lo12));
+    }
+
+
+    [Test]
+    public void Tasm_auipc()
+    {
+        var tasm = RunTest(
+            "auipc   10, %pcrel_hi(space)",
+            m => m.auipc(10, m.pcrel_hi("space")));
+        Assert.That(tasm.Relocations.Count, Is.EqualTo(1));
+        Assert.That(tasm.Relocations[0].Rtype, Is.EqualTo(RelocationType.U_PcRelative_Hi20));
+        Assert.That(tasm.Relocations[0].SymbolName, Is.EqualTo("space"));
+    }
+
+
+    [Test]
+    public void Tasm_beq()
+    {
+        var tasm = RunTest(
+            "beq   1, 2, my_label",
+            m => m.beq(1, 2, "my_label"));
+
+        Assert.That(tasm.Relocations.Count, Is.EqualTo(1));
+        Assert.That(tasm.Relocations[0].SymbolName, Is.EqualTo("my_label"));
+        Assert.That(tasm.Relocations[0].Rtype, Is.EqualTo(RelocationType.B_PcRelative));
+    }
+
+    [Test]
+    public void Tasm_j()
+    {
+        var tasm = RunTest(
+            "j   my_label",
+            m => m.j("my_label"));
+
+        Assert.That(tasm.Relocations.Count, Is.EqualTo(1));
+        Assert.That(tasm.Relocations[0].SymbolName, Is.EqualTo("my_label"));
+        Assert.That(tasm.Relocations[0].Rtype, Is.EqualTo(RelocationType.J_PcRelative));
+    }
+
+    [Test]
+    public void Tasm_jal()
+    {
+        var tasm = RunTest(
+            "jal   1, my_label",
+            m => m.jal(1, "my_label"));
+
+        Assert.That(tasm.Relocations.Count, Is.EqualTo(1));
+        Assert.That(tasm.Relocations[0].SymbolName, Is.EqualTo("my_label"));
+        Assert.That(tasm.Relocations[0].Rtype, Is.EqualTo(RelocationType.J_PcRelative));
+    }
+
+    [Test]
+    public void Tasm_li()
+    {
+        RunTest(
+            "li   10, -2",
+            m => m.li(10, -2)); 
+    }
+    
+    [Test]
+    public void Tasm_lw()
+    {
+        RunTest(
+            "lw   10, 2, 0 ",
+            m => m.lw(10, 2, 0));
+    }
+
+    [Test]
+    public void Tasm_slli()
+    {
+        RunTest(
+            "slli   14, 13, 2",
+            m => m.slli(14, 13, 2));
     }
 
     [Test]
@@ -247,30 +364,12 @@ public class TextAssemblerTests
             m => m.sub(2, 0, 1));
     }
 
-    private void RunTest(string asmSource, Action<Assembler> builder)
-    {
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asmSource), new Logger());
-        var section = tasm.AssembleFile();
-        Assert.That(section, !Is.Null);
-
-        var casm = new Assembler(new Logger());
-        builder(casm);
-
-        Assert.That(section.GetAssembledBytes(), Is.EqualTo(casm.Section.GetAssembledBytes()));
-    }
-
     [Test]
-    public void Tasm_add()
+    public void Tasm_sw()
     {
-        var asm = "   add 2,0,1\r\n";
-        var tasm = new TextAssembler(Encoding.UTF8.GetBytes(asm), new Logger());
-        var section = tasm.AssembleFile();
-        Assert.That(section, !Is.Null);
-
-        var casm = new Assembler(new Logger());
-        casm.add(2, 0, 1);
-
-        Assert.That(section.GetAssembledBytes(), Is.EqualTo(casm.Section.GetAssembledBytes()));
+        RunTest(
+            "sw   10, 2, 0 ",
+            m => m.sw(10, 2, 0));
     }
 }
 
