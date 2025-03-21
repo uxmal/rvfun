@@ -29,8 +29,8 @@ main_loopbody:
 lw   13, 2, 8         ; get i
 beq   13, 0, main_write_arg ; only write space if i != 0
 
-auipc   10, pcrel_hi(space)
-addi   10, 10, pcrel_lo(-4)
+auipc   10, %pcrel_hi(space)
+addi   10, 10, %pcrel_lo(-4)
 jal   1, putstring
 
 main_write_arg:
@@ -48,8 +48,8 @@ lw   13, 2, 8     ; x13 = i
 lw   10, 2, 0     ; x10 = argc
 blt   13, 10, main_loopbody
 
-auipc   10, pcrel_hi(nl)
-addi   10, 10, pcrel_lo(-4)
+auipc   10, %pcrel_hi(nl)
+addi   10, 10, %pcrel_lo(-4)
 jal   1, putstring
 
 li   10, 0
