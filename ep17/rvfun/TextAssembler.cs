@@ -13,6 +13,11 @@ public class TextAssembler
 
     private Assembler asm;
 
+    private Dictionary<string, int> equates;
+    private StringBuilder sb;
+
+    private string currentString;
+
     public TextAssembler(byte[] bytes, Logger logger)
     {
         this.bytes = bytes;
@@ -21,6 +26,9 @@ public class TextAssembler
         this.valid = true;
         this.previousToken = Token.EOF;
         this.asm = new Assembler(logger);
+        this.equates = [];
+        this.sb = new();
+        this.currentString = "";
     }
 
     public int CurrentValue { get; private set; }
@@ -62,6 +70,22 @@ public class TextAssembler
                 Error($"Redefinition of symbol '{w}'.");
             }
         }
+        // We have seen a word, is it followed by a directive?
+        if (PeekToken() == Token.Word)
+        {
+            if (this.GetTokenString() == "equ")
+            {
+                GetToken();
+                var n = ExpectNumber();
+                ExpectEndLine();
+
+                if (!equates.TryAdd(w, n))
+                {
+                    Error("Duplicate equ definition.");
+                }
+                return true;
+            }
+        }
         // We have seen a word, classify it.
         foreach (var enc in encoders)
         {
@@ -81,22 +105,28 @@ public class TextAssembler
         this.valid = false;
     }
 
-    private static AsmEncoder [] encoders = [
+    private static AsmEncoder[] encoders = [
         new AsmEncoder("addi", 0b000_00000_0010011, AsmI),
         new AsmEncoder("add", 0b0000000_0000000000_000_00000_0110011, AsmR),
         new AsmEncoder("auipc", 0b0010111, AsmAuipc),
         new AsmEncoder("beq", 0b000_00000_1100011, AsmB),
         new AsmEncoder("blt", 0b100_00000_1100011, AsmB),
+        new AsmEncoder("bne", 0b001_00000_1100011, AsmB),
+        new AsmEncoder("ds", 0, AsmDs),
+        new AsmEncoder("ecall", 0, AsmEcall),
         new AsmEncoder("j", 0b1101111, AsmJ),
         new AsmEncoder("jal", 0b1101111, AsmJal),
+        new AsmEncoder("jalr", 0b000_00000_1100111, AsmI),
+        new AsmEncoder("lbu", 0b100_00000_0000011, AsmI),
         new AsmEncoder("lw", 0b010_00000_0000011, AsmI),
         new AsmEncoder("li", 0, AsmLi),
         new AsmEncoder("slli", 0b0000000_0000000000_001_00000_0010011, AsmShifti),
         new AsmEncoder("sub", 0b0100000_0000000000_000_00000_0110011, AsmR),
         new AsmEncoder("sw", 0b010_00000_0100011, AsmS)
-    ] ;
+    ];
 
-    private class AsmEncoder{
+    private class AsmEncoder
+    {
         public AsmEncoder(string mnemonic, uint opcode, Action<TextAssembler, uint> handler)
         {
             this.Mnemonic = mnemonic;
@@ -109,7 +139,7 @@ public class TextAssembler
         public Action<TextAssembler, uint> Handler { get; }
     }
 
-    
+
     private static void AsmAuipc(TextAssembler asm, uint opcode)
     {
         var reg = asm.ExpectNumber();
@@ -118,7 +148,7 @@ public class TextAssembler
         asm.asm.asmU(opcode, reg, imm);
 
     }
-    
+
     private static void AsmB(TextAssembler asm, uint opcode)
     {
         var reg1 = asm.ExpectNumber();
@@ -129,6 +159,22 @@ public class TextAssembler
         asm.asm.EmitRelocation(asm.asm.Position, RelocationType.B_PcRelative, target);
         asm.asm.asmB(opcode, reg1, reg2, 0);
     }
+
+    private static void AsmDs(TextAssembler asm, uint opcode)
+    {
+        var s = asm.ExpectStringLiteral();
+        asm.ExpectEndLine();
+
+        asm.asm.ds(s);
+    }
+
+    private static void AsmEcall(TextAssembler asm, uint opcode)
+    {
+        asm.ExpectEndLine();
+
+        asm.asm.ecall();
+    }
+
 
     private static void AsmI(TextAssembler asm, uint opcode)
     {
@@ -246,6 +292,16 @@ public class TextAssembler
         return this.CurrentValue;
     }
 
+    private string ExpectStringLiteral()
+    {
+        if (GetToken() != Token.StringLiteral)
+        {
+            Expected("a string literal");
+            return "";
+        }
+        return this.GetTokenString();
+    }
+
     private string ExpectSymbol()
     {
         if (GetToken() != Token.Word)
@@ -316,6 +372,7 @@ public class TextAssembler
     {
         var state = State.Start;
         int sign = 1;
+        this.sb.Clear();
         for (; ; )
         {
             int c;
@@ -357,6 +414,9 @@ public class TextAssembler
                         case '-':
                             state = State.Minus;
                             continue;
+                        case '"':
+                            state = State.StringLiteral;
+                            continue;
                         case '0':
                         case '1':
                         case '2':
@@ -373,6 +433,7 @@ public class TextAssembler
                         default:
                             if (char.IsAsciiLetter((char)c) || c == '_' || c == '.' || c == '%')
                             {
+                                sb.Append((char)c);
                                 iBeginPos = iPos - 1;
                                 state = State.Word;
                                 continue;
@@ -519,12 +580,15 @@ public class TextAssembler
                     switch (c)
                     {
                         case -1:
-                            return Token.Word;
+                            return MaybeEquate();
                         default:
                             if (char.IsAsciiLetterOrDigit((char)c) || c == '_')
+                            {
+                                sb.Append((char)c);
                                 continue;
+                            }
                             --iPos;
-                            return Token.Word;
+                            return MaybeEquate();
                     }
                 case State.Cr:
                     switch (c)
@@ -576,13 +640,82 @@ public class TextAssembler
                             continue;
 
                     }
+                case State.StringLiteral:
+                    switch (c)
+                    {
+                        case -1:
+                            Error("Unterminated string.");
+                            return Token.StringLiteral;
+                        case '\r':
+                        case '\n':
+                            Error("Unterminated string.");
+                            --iPos;
+                            return Token.StringLiteral;
+                        case '"':
+                            this.currentString = sb.ToString();
+                            return Token.StringLiteral;
+                        case '\\':
+                            state = State.EscapedCharacter;
+                            continue;
+                        default:
+                            sb.Append((char)c);
+                            continue;
+                    }
+                case State.EscapedCharacter:
+                    switch (c)
+                    {
+                        case -1:
+                            Error("Unterminated string.");
+                            return Token.StringLiteral;
+                        case '\r':
+                        case '\n':
+                            Error("Unterminated string.");
+                            --iPos;
+                            return Token.StringLiteral;
+                        case 't':
+                            sb.Append('\t');
+                            state = State.StringLiteral;
+                            continue;
+                        case 'n':
+                            sb.Append('\n');
+                            state = State.StringLiteral;
+                            continue;
+                        case 'r':
+                            sb.Append('\r');
+                            state = State.StringLiteral;
+                            continue;
+                        case '0':
+                            sb.Append('\0');
+                            state = State.StringLiteral;
+                            continue;
+                        case '\\':
+                            sb.Append('\\');
+                            state = State.StringLiteral;
+                            continue;
+                        default:
+                            Error("Invalid escape sequence in string.");
+                            state = State.StringLiteral;
+                            continue;
+                    }
             }
         }
     }
 
+    private Token MaybeEquate()
+    {
+        this.currentString = sb.ToString();
+        var s = GetTokenString();
+        if (equates.TryGetValue(s, out var value))
+        {
+            this.CurrentValue = value;
+            return Token.Number;
+        }
+        return Token.Word;
+    }
+
     public string GetTokenString()
     {
-        return Encoding.UTF8.GetString(this.bytes, iBeginPos, iPos - iBeginPos);
+        return this.currentString;
     }
 
     private void Unexpected(int c)
@@ -602,6 +735,8 @@ public class TextAssembler
         Cr,
         Comment,
         Minus,
+        StringLiteral,
+        EscapedCharacter,
     }
 }
 
@@ -614,4 +749,5 @@ public enum Token
     RParen,
     Word,
     EndLine,
+    StringLiteral,
 }

@@ -14,7 +14,9 @@
 ;       _hello
 ;       hello123_
 
-
+SYSCALL_EXIT    equ     0
+SYSCALL_WRITE   equ     1
+EXITCODE_SUCCESS equ    0
 
 
 addi   2, 2, -16      ; make space for 4 words
@@ -52,8 +54,8 @@ auipc   10, %pcrel_hi(nl)
 addi   10, 10, %pcrel_lo(-4)
 jal   1, putstring
 
-li   10, 0
-li   17, OsEmulator.SYSCALL_EXIT
+li   10, EXITCODE_SUCCESS
+li   17, SYSCALL_EXIT
 ecall   
 ; lw   1, 2, 12         ; restore return address.
 ; addi   2, 2, 16      ; restore stack ptr
@@ -69,7 +71,7 @@ jal   1, strlen
 addi   12, 10, 0      ; Copy x10 into x12
 lw   11, 2, 4         ; reload the string ptr
 li   10, 1            ; std output in x10
-li   17, OsEmulator.SYSCALL_WRITE
+li   17, SYSCALL_WRITE
 
 ecall   
 
@@ -94,4 +96,4 @@ jalr   0, 1, 0
 
 ; data
 space: ds   " \0"
-nl: ds   "\r\n\0":
+nl: ds   "\r\n\0"

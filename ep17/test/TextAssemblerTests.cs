@@ -191,6 +191,33 @@ public class TextAssemblerTests
     }
 
     [Test]
+    public void Tasm_EmptyStringLiteral()
+    {
+        var tasm = Given_TextAssembler(@"   """"   ");
+        var token = tasm.GetToken();
+        Assert.That(token, Is.EqualTo(Token.StringLiteral));
+        Assert.That(tasm.GetTokenString(), Is.EqualTo(""));
+    }
+
+    [Test]
+    public void Tasm_SingleCharStringLiteral()
+    {
+        var tasm = Given_TextAssembler(@"   ""a""   ");
+        var token = tasm.GetToken();
+        Assert.That(token, Is.EqualTo(Token.StringLiteral));
+        Assert.That(tasm.GetTokenString(), Is.EqualTo(""));
+    }
+
+        [Test]
+    public void Tasm_EscapedTabStringLiteral()
+    {
+        var tasm = Given_TextAssembler(@"   ""\t""   ");
+        var token = tasm.GetToken();
+        Assert.That(token, Is.EqualTo(Token.StringLiteral));
+        Assert.That(tasm.GetTokenString(), Is.EqualTo("\t"));
+    }
+
+    [Test]
     public void Tasm_Label()
     {
         var tasm = Given_TextAssembler("symbol:");
@@ -370,6 +397,14 @@ public class TextAssemblerTests
         RunTest(
             "sw   10, 2, 0 ",
             m => m.sw(10, 2, 0));
+    }
+
+    [Test]
+    public void Tasm_equ()
+    {
+        RunTest(
+            "num equ -2\naddi 3,0,num",
+            m => m.addi(3, 0, -2));
     }
 }
 
