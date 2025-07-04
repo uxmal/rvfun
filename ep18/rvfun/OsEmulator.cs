@@ -82,7 +82,7 @@ public class OsEmulator
             return -1;
         try
         {
-            var span = mem.GetSpan(address, length, AccessMode.Write);
+            var span = mem.GetSpan(address, length, AccessMode.Read);
             handles[handle].Write(span);
         }
         catch

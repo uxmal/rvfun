@@ -10,7 +10,7 @@ public class AssemblerSection
         this.bytes = new();
     }
 
-    public uint  Position => (uint) bytes.Position;
+    public uint Position => (uint) bytes.Position;
      
     public byte[] GetAssembledBytes()
     {
