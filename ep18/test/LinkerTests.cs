@@ -1,5 +1,7 @@
 namespace rvfun.UnitTests;
 
+using rvfun.asm;
+using rvfun.lib;
 using Reko.Arch.RiscV;
 
 using NUnit.Framework;

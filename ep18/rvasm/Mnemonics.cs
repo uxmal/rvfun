@@ -1,4 +1,4 @@
-namespace rvfun;
+namespace rvfun.asm;
 
 public enum Mnemonics
 {

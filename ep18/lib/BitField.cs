@@ -1,4 +1,4 @@
-namespace rvfun;
+namespace rvfun.lib;
 
 #pragma warning disable IDE0290
 

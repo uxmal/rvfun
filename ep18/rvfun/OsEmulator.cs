@@ -1,5 +1,6 @@
 using System.Text;
 using rvfun;
+using rvfun.lib;
 
 public class OsEmulator
 {

@@ -1,9 +1,9 @@
 namespace rvfun;
 
-using System.Diagnostics.Contracts;
+using rvfun.lib;
 using Reko.Core;
 using Reko.Core.Memory;
-using static rvfun.Mnemonics;
+// using static rvfun.Mnemonics;
 
 public class Emulator
 {

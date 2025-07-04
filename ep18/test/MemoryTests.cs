@@ -1,5 +1,6 @@
 namespace rvfun.UnitTests;
 
+using rvfun.lib;
 using NUnit.Framework;
 
 #pragma warning disable NUnit2005

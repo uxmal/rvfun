@@ -1,6 +1,7 @@
 namespace rvfun.UnitTests;
 
 using rvfun;
+using rvfun.lib;
 
 [TestFixture]
 public class HexDumperTests

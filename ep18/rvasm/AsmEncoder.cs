@@ -1,4 +1,6 @@
-namespace rvfun;
+namespace rvfun.asm;
+
+using rvfun.lib;
 
 public class AsmEncoder
 {

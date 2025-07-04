@@ -1,5 +1,5 @@
 
-namespace rvfun;
+namespace rvfun.asm;
 
 public class AssemblerSection
 {

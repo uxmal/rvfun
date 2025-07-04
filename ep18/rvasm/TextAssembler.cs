@@ -1,6 +1,8 @@
+using rvfun.lib;
+
 using System.Text;
 
-namespace rvfun;
+namespace rvfun.asm;
 
 public class TextAssembler
 {

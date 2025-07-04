@@ -1,7 +1,8 @@
 namespace rvfun.UnitTests;
 
 using rvfun;
-using static rvfun.Mnemonics;
+using rvfun.asm;
+using rvfun.lib;
 
 #pragma warning disable NUnit2005
 

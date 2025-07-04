@@ -1,4 +1,4 @@
-namespace rvfun;
+namespace rvfun.lib;
 
 [Flags]
 public enum AccessMode

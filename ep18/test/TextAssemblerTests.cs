@@ -1,5 +1,6 @@
 using System.Text;
-using rvfun;
+using rvfun.asm;
+using rvfun.lib;
 
 namespace rvfun.UnitTests;
 
@@ -205,7 +206,7 @@ public class TextAssemblerTests
         var tasm = Given_TextAssembler(@"   ""a""   ");
         var token = tasm.GetToken();
         Assert.That(token, Is.EqualTo(Token.StringLiteral));
-        Assert.That(tasm.GetTokenString(), Is.EqualTo(""));
+        Assert.That(tasm.GetTokenString(), Is.EqualTo("a"));
     }
 
         [Test]

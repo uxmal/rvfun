@@ -1,5 +1,8 @@
 namespace rvfun.UnitTests;
 
+using rvfun.asm;
+using rvfun.lib;
+
 #pragma warning disable NUnit2005
 
 [TestFixture]

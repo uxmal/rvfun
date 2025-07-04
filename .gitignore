@@ -1,4 +1,6 @@
 **/bin/
 **/obj/
 **/.vscode/
+**/.vs/
 tasks.json
+**/Properties/launchSettings.json 

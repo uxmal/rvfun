@@ -10,7 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="../lib/lib.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Reko.Decompiler.Runtime" Version="0.11.5" />
   </ItemGroup>

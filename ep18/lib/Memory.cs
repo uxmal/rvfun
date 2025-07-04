@@ -1,8 +1,7 @@
 using System.Text;
-using Microsoft.Win32.SafeHandles;
 using Reko.Core.Collections;
 
-namespace rvfun;
+namespace rvfun.lib;
 
 public class Memory
 {
