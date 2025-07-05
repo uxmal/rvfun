@@ -409,7 +409,7 @@ public class Emulator
         }
         iptr = iptrNext;
         return iptr;
-    }
+    }   
 
     private void DumpCurrentInstruction(uint iptr)
     {
